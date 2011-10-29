@@ -1,0 +1,21 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+</IfModule>
+
+<IfModule mod_rewrite.c>
+	RewriteRule ^(.*)/$ /$1 [R=301,L]
+</IfModule>
+
+
+<IfModule mod_rewrite.c>
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteRule !\.(j|js|ico|gif|jpg|png|css)$ index.php [NC,L]
+
+	#RewriteCond %{REQUEST_FILENAME} -s [OR]
+	#RewriteCond %{REQUEST_FILENAME} -l [OR]
+	#RewriteCond %{REQUEST_FILENAME} -d
+	#RewriteRule ^.*$ - [NC,L]
+	#RewriteRule ^.*$ index.php [NC,L]
+</IfModule>
