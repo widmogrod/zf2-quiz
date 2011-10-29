@@ -10,3 +10,6 @@
 [submodule "modules/ZendDeveloperTools"]
 	path = modules/ZendDeveloperTools
 	url = https://github.com/zendframework/ZendDeveloperTools.git
+[submodule "modules/Assetic"]
+	path = modules/Assetic
+	url = git@github.com:widmogrod/zf2-assetic-module.git
