@@ -4,3 +4,6 @@
 [submodule "modules/SpiffyDoctrine"]
 	path = modules/SpiffyDoctrine
 	url = https://SpiffyJr@github.com/SpiffyJr/SpiffyDoctrine.git
+[submodule "library/ZendFramework"]
+	path = library/ZendFramework
+	url = https://github.com/zendframework/zf2.git
