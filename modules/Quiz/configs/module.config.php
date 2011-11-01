@@ -3,7 +3,7 @@ return array(
     'di' => array(
         'instance' => array(
             'alias' => array(
-                'skeleton' => 'ZendSkeletonModule\Controller\SkeletonController',
+                'skeleton' => 'Assetic\Controller\SkeletonController',
             ),
             'Zend\View\PhpRenderer' => array(
                 'parameters' => array(

@@ -153,7 +153,7 @@ class Listener implements ListenerAggregate
 
         $layout   = $this->view->render($this->layout, $vars);
         $response->setContent($layout);
-        return $response;
+//        return $response;
     }
 
     public function render404(MvcEvent $e)

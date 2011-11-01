@@ -22,6 +22,9 @@ $moduleManager = new Zend\Module\Manager(
     $appConfig['modules'],
     new Zend\Module\ManagerOptions($appConfig['module_manager_options'])
 );
+#echo '<pre>';
+#print_r($moduleManager->getMergedConfig()->toArray());
+#echo '</pre>';
 
 // Create application, bootstrap, and run
 $bootstrap      = new Zend\Mvc\Bootstrap($moduleManager);
