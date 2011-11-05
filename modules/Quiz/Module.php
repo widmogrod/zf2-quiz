@@ -1,6 +1,6 @@
 <?php
 
-namespace ZendSkeletonModule;
+namespace Quiz;
 
 use Zend\Config\Config,
     Zend\Module\Manager,

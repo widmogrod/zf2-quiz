@@ -3,7 +3,7 @@
 	url = https://SpiffyJr@github.com/SpiffyJr/SpiffyDoctrine.git
 [submodule "library/ZendFramework"]
 	path = library/ZendFramework
-	url = git@github.com:widmogrod/zf2.git
+	url = git@github.com:zendframework/zf2.git
 [submodule "modules/User"]
 	path = modules/User
 	url = https://github.com/EvanDotPro/zf2-user-module.git

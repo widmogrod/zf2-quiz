@@ -5,9 +5,14 @@ return array(
     ),
     'modules' => array(
 
-//        'User',
 //        'ZendDeveloperTools',
+        'TwitterBootstrap',
         'Assetic',
+
+        'SpiffyDoctrine',
+
+        'Quiz',
+
         'Application',
     ),
     'module_manager_options' => array(

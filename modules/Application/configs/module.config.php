@@ -7,9 +7,22 @@ return array(
     'di'              => array(
         'instance' => array(
             'alias' => array(
-                'index' => 'Application\Controller\IndexController',
+                'index' => 'Quiz\Controller\IndexController',
                 'error' => 'Application\Controller\ErrorController',
                 'view'  => 'Zend\View\PhpRenderer',
+            ),
+
+            'doctrine' => array(
+                'parameters' => array(
+                    'conn' => array(
+                        'driver'   => 'pdo_pgsql',
+                        'host'     => 'localhost',
+                        'port'     => '5432',
+                        'user'     => 'localadmin',
+                        'password' => '',
+                        'dbname'   => 'quiz_dev',
+                    ),
+                ),
             ),
 
             'Zend\View\HelperLoader' => array(
@@ -31,7 +44,7 @@ return array(
                     'resolver' => 'Zend\View\TemplatePathStack',
                     'options'  => array(
                         'script_paths' => array(
-                            'application' => __DIR__ . '/../views',
+//                            'application' => __DIR__ . '/../views',
                         ),
                     ),
                     'broker' => 'Zend\View\HelperBroker',

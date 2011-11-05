@@ -18,16 +18,18 @@ $appConfig = new Zend\Config\Config(include __DIR__ . '/../configs/application.c
 $moduleLoader = new Zend\Loader\ModuleAutoloader($appConfig['module_paths']);
 $moduleLoader->register();
 
-$moduleManager = new Zend\Module\Manager(
+$moduleManager = new Zend\Module\AutoDependencyManager(
     $appConfig['modules'],
     new Zend\Module\ManagerOptions($appConfig['module_manager_options'])
 );
-#echo '<pre>';
-#print_r($moduleManager->getMergedConfig()->toArray());
-#echo '</pre>';
 
 // Create application, bootstrap, and run
 $bootstrap      = new Zend\Mvc\Bootstrap($moduleManager);
 $application    = new Zend\Mvc\Application;
 $bootstrap->bootstrap($application);
+
+//echo '<pre>';
+//print_r($moduleManager->getMergedConfig(false));
+//echo '</pre>';
+
 $application->run()->send();

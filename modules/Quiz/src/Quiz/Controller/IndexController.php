@@ -1,10 +1,10 @@
 <?php
 
-namespace ZendSkeletonModule\Controller;
+namespace Quiz\Controller;
 
 use Zend\Mvc\Controller\ActionController;
 
-class SkeletonController extends ActionController
+class IndexController extends ActionController
 {
     public function indexAction()
     {
