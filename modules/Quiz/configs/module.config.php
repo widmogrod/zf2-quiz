@@ -21,14 +21,14 @@ return array(
                     'config' => array(
                         'auto-generate-proxies'     => true,
                         // @todo: figure out how to de-couple the Proxy dir
-                        'proxy-dir'                 => __DIR__ . '/src/Quiz/Proxy',
+                        'proxy-dir'                 => __DIR__ . '/../src/Quiz/Proxy',
                         'proxy-namespace'           => 'Quiz\Proxy',
                         'metadata-driver-impl'      => array(
                              'application-annotation-driver' => array(
                                  'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
                                  'namespace' => 'Quiz\Entity',
                                  'paths' => array(
-                                     __DIR__ . '/src/Quiz/Entity'
+                                     __DIR__ . '/../src/Quiz/Entity'
                                  ),
                                  'cache-class' => 'Doctrine\Common\Cache\ArrayCache',
                              )
