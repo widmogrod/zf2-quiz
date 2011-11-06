@@ -44,7 +44,7 @@ return array(
                     'resolver' => 'Zend\View\TemplatePathStack',
                     'options'  => array(
                         'script_paths' => array(
-//                            'application' => __DIR__ . '/../views',
+                            'application' => __DIR__ . '/../views',
                         ),
                     ),
                     'broker' => 'Zend\View\HelperBroker',

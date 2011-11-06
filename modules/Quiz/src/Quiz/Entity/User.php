@@ -23,7 +23,7 @@ class User
     protected $id = null;
 
     /**
-     * @ORM\Column(type="string", length=32, unique=true, nullable=false)
+     * @ORM\Column(type="string", length=32, nullable=false)
      */
     protected $username;
 
