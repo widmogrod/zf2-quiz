@@ -41,9 +41,11 @@ class Answer
         return $this->id;
     }
 
-    public function setQuestion(Question $question)
+    public function setQuestion(Question $question, $addToInverse = true)
     {
-        $question->addAnswer($this);
+        if ($addToInverse) {
+            $question->addAnswer($this, false);
+        }
         $this->question = $question;
     }
 

@@ -24,32 +24,33 @@ class IndexController extends ActionController implements LocatorAware
 //            var_dump($e->getMessage());
 //        }
 //
-//        $question = new \Quiz\Entity\Question();
-//        $question->setTitle('pierwsze pytanie');
-//        $question->setContent('Jak masz na imie?');
-//
-//
-//        $answer = new \Quiz\Entity\Answer();
-//        $answer->setName('Gabriel');
-//        $answer->setIsCorrect(true);
+        $question = new \Quiz\Entity\Question();
+        $question->setTitle('pierwsze pytanie');
+        $question->setContent('Jak masz na imie?');
+
+
+        $answer = new \Quiz\Entity\Answer();
+        $answer->setName('Gabriel');
+        $answer->setIsCorrect(true);
+        $question->addAnswer($answer);
+
+        $answer = new \Quiz\Entity\Answer();
+        $answer->setName('Rafał');
+        $answer->setIsCorrect(false);
+        $question->addAnswer($answer);
+
+        $answer = new \Quiz\Entity\Answer();
+        $answer->setName('Michał');
+        $answer->setIsCorrect(false);
+        $question->addAnswer($answer);
 //        $question->addAnswer($answer);
-//
-//        $answer = new \Quiz\Entity\Answer();
-//        $answer->setName('Rafał');
-//        $answer->setIsCorrect(false);
-//        $question->addAnswer($answer);
-//
-//        $answer = new \Quiz\Entity\Answer();
-//        $answer->setName('Michał');
-//        $answer->setIsCorrect(false);
-//        $question->addAnswer($answer);
-//
-//        try {
-//            $em->persist($question);
-//            $em->flush();
-//        } catch(\Exception $e) {
-//            var_dump($e->getMessage());
-//        }
+
+        try {
+            $em->persist($question);
+            $em->flush();
+        } catch(\Exception $e) {
+            var_dump($e->getMessage());
+        }
 //
 //        $records = $em->getRepository('\Quiz\Entity\User')->findAll();
 //        var_dump($records);
@@ -60,18 +61,24 @@ class IndexController extends ActionController implements LocatorAware
 //        $records = $em->getRepository('\Quiz\Entity\Answer')->findAll();
 //        var_dump($records);
 
-        $dql = 'SELECT q.*, a.* FROM \Quiz\Entity\Question q JOIN \Quiz\Entity\Answer a';
-        /* @var $q \Doctrine\ORM\Query */
-        $q = $em->createQuery($dql);
-
-        try {
-            $result = $q->getResult();
-
-            var_dump($result);
-            var_dump($q);
-        } catch(\Exception $e) {
-            var_dump($e->getMessage());
-        }
+//        $dql = 'SELECT q, a FROM Quiz\Entity\Question q JOIN q.answers a';
+////        $dql = 'SELECT q, a FROM Quiz\Entity\Answer a JOIN a.question q';
+//        /* @var $q \Doctrine\ORM\Query */
+//        $q = $em->createQuery($dql);
+//
+//        try {
+//            $result = $q->getResult();
+//            $resultA = $q->getArrayResult();
+//
+//            var_dump($resultA);
+//        } catch(\Exception $e) {
+//            var_dump($e->getMessage());
+//        }
+//
+//        /* @var $question \Quiz\Entity\Question */
+//        $question = $em->getRepository('\Quiz\Entity\Question')->find(4);
+//        $em->remove($question);
+//        $em->flush();
 
         return array();
     }

@@ -6,6 +6,7 @@
 namespace Quiz\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * (repositoryClass="Quiz\Model\UserRepository")
@@ -14,7 +15,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class User
 {
-
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")
@@ -27,6 +27,12 @@ class User
      */
     protected $username;
 
+    /**
+     * @ORM\OneToMany(targetEntity="Quiz", mappedBy="user", cascade={"persist", "remove", "merge"}, orphanRemoval=true)
+     * @var \Doctrine\Common\Collections\ArrayCollection
+     */
+    protected $quizzes;
+
     public function getId()
     {
         return $this->id;
@@ -35,10 +41,24 @@ class User
     public function setUsername($username)
     {
         $this->username = $username;
+        $this->quizzes = new ArrayCollection();
     }
 
     public function getUsername()
     {
         return $this->username;
+    }
+
+    public function addQuiz(Quiz $quiz, $setToOwner = true)
+    {
+        if ($setToOwner) {
+            $quiz->setUser($this, false);
+        }
+        $this->quizzes->add($quiz);
+    }
+
+    public function getQuizzes()
+    {
+        return $this->quizzes;
     }
 }

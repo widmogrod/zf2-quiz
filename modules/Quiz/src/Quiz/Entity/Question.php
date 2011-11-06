@@ -101,12 +101,16 @@ class Question
         return $this->type;
     }
 
-    public function addAnswer(Answer $answer)
+    public function addAnswer(Answer $answer, $setToOwner = true)
     {
-        if (!$this->answers->contains($answer))
-        {
-            $this->answers->add($answer);
-            $answer->setQuestion($this);
+        if ($setToOwner) {
+            $answer->setQuestion($this, false);
         }
+        $this->answers->add($answer);
+    }
+
+    public function getAnswers()
+    {
+        return $this->answers;
     }
 }
