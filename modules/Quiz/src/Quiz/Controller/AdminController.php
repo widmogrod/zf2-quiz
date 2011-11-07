@@ -1,15 +1,19 @@
 <?php
 namespace Quiz\Controller;
 
-use Zend\Mvc\Controller\Action;
+use Zend\Mvc\Controller\ActionController;;
+use Quiz\Form\Question;
 
 /**
  * @author Gabriel Habryn <gabriel.habryn@me.com>
  */
-class IndexController extends Action
+class AdminController extends ActionController
 {
-    public function indexAction()
+    public function quizmanageAction()
     {
-        
+        $form = new Question();
+        return array(
+            'form' => $form
+        );
     }
 }

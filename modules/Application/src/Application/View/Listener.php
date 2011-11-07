@@ -164,7 +164,7 @@ class Listener implements ListenerAggregate
         }
 
         $response = $e->getResponse();
-        if ($response->getStatusCode() != 404) {
+        if (!$response || $response->getStatusCode() != 404) {
             // Only handle 404's
             return;
         }

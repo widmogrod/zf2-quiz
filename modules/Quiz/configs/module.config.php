@@ -3,7 +3,7 @@ return array(
     'di' => array(
         'instance' => array(
             'alias' => array(
-                'skeleton' => 'Assetic\Controller\SkeletonController',
+                'quizadmin' => 'Quiz\Controller\AdminController',
             ),
 
             'Zend\View\PhpRenderer' => array(

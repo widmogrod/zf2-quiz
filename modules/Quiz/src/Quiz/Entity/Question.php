@@ -19,7 +19,7 @@ class Question
     const TYPE_VIDEO = 'video';
     const TYPE_IMAGE = 'image';
 
-    protected $availableTypes = array(
+    protected static $availableTypes = array(
         self::TYPE_AUDIO,
         self::TYPE_IMAGE,
         self::TYPE_VIDEO,
@@ -112,5 +112,10 @@ class Question
     public function getAnswers()
     {
         return $this->answers;
+    }
+
+    public static function getAvailableTypes()
+    {
+        return self::$availableTypes;
     }
 }

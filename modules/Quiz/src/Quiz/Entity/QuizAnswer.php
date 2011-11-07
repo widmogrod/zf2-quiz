@@ -27,6 +27,7 @@ class QuizAnswer
     protected $quiz;
 
     /**
+     * Unidirectional
      * @ORM\ManyToOne(targetEntity="Answer", cascade={"all"}, fetch="LAZY")
      * @var Answer
      */
@@ -59,7 +60,7 @@ class QuizAnswer
     /**
      * @param \Quiz\Entity\Answer $answer
      */
-    public function setAnswer($answer)
+    public function setAnswer(Answer $answer)
     {
         $this->answer = $answer;
     }
