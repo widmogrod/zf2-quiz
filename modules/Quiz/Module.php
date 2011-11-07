@@ -27,6 +27,25 @@ class Module
         ));
     }
 
+    public function getProvides()
+    {
+        return array(
+            __NAMESPACE__ => array(
+                'version' => '0.1.0'
+            ),
+        );
+    }
+
+    public function getDependencies()
+    {
+        return array(
+            'TwitterBootstrap' => array(
+                'version' => '>=0.1.0',
+                'required' => true
+            ),
+        );
+    }
+
     public function getConfig($env = null)
     {
         return new Config(include __DIR__ . '/configs/module.config.php');
