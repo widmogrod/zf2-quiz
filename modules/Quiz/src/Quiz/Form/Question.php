@@ -12,6 +12,7 @@ class Question extends TwitterForm\Form
     public function init()
     {
         $this->setMethod(self::METHOD_POST);
+//        $this->setAction('/quizadmin/quizmanage');
         $this->setLegend('Pytanie');
 
         $this->addElement('text', 'title', array(
@@ -57,17 +58,17 @@ class Question extends TwitterForm\Form
     {
         $form = new TwitterForm\SubForm();
         $form->setLegend('Odpowiedzi');
-        $form->addElement(self::ELEMENT_APPENDED_TEXT, 'answer1', array(
+        $form->addElement(self::ELEMENT_APPENDED_TEXT, '1', array(
             'label' => 'Odpowiedź pierwsza',
             'content' => '<input type="radio" name="correct" value="1">',
             'required' => true,
         ));
-        $form->addElement(self::ELEMENT_APPENDED_TEXT, 'answer2', array(
+        $form->addElement(self::ELEMENT_APPENDED_TEXT, '2', array(
             'label' => 'Odpowiedź druga',
             'content' => '<input type="radio" name="correct" value="2">',
             'required' => true,
         ));
-        $form->addElement(self::ELEMENT_APPENDED_TEXT, 'answer3', array(
+        $form->addElement(self::ELEMENT_APPENDED_TEXT, '3', array(
             'label' => 'Odpowiedź trzecia',
             'content' => '<input type="radio" name="correct" value="3">',
             'required' => true,

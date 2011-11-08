@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Quiz\Repository\Question")
  * @ORM\Table(name="quiz_question")
  */
 class Question
@@ -86,10 +86,10 @@ class Question
 
     public function setType($type)
     {
-        if (!isset($this->availableTypes[$type]))
+        if (!isset(static::$availableTypes[$type]))
         {
             $message = 'Invalid question type "%s". Available types: %s';
-            $message = sprintf($message, $type, implode(', ', $this->availableTypes));
+            $message = sprintf($message, $type, implode(', ', static::$availableTypes));
             throw new \InvalidArgumentException($message);
         }
 
@@ -116,6 +116,6 @@ class Question
 
     public static function getAvailableTypes()
     {
-        return self::$availableTypes;
+        return static::$availableTypes;
     }
 }

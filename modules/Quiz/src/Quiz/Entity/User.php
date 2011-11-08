@@ -9,7 +9,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * (repositoryClass="Quiz\Model\UserRepository")
  * @ORM\Entity
  * @ORM\Table(name="quiz_user")
  */
