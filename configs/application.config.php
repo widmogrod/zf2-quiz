@@ -6,6 +6,7 @@ return array(
     'modules' => array(
 
 //        'ZendDeveloperTools',
+        'DataGridBundle',c
         'TwitterBootstrap',
         'Assetic',
 

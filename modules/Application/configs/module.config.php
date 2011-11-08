@@ -54,11 +54,21 @@ return array(
     ),
 
     'routes' => array(
+//        'default' => array(
+//            'type'    => 'Zend\Mvc\Router\Http\Regex',
+//            'options' => array(
+//                'regex'    => '/(?P<controller>[^/]+)(/(?P<action>[^/]+)?)?',
+//                'spec'     => '/%controller%/%action%',
+//                'defaults' => array(
+//                    'controller' => 'error',
+//                    'action'     => 'index',
+//                ),
+//            ),
+//        ),
         'default' => array(
-            'type'    => 'Zend\Mvc\Router\Http\Regex',
+            'type'    => 'Zend\Mvc\Router\Http\Segment',
             'options' => array(
-                'regex'    => '/(?P<controller>[^/]+)(/(?P<action>[^/]+)?)?',
-                'spec'     => '/%controller%/%action%',
+                'route'    => '/:controller[/:action]',
                 'defaults' => array(
                     'controller' => 'error',
                     'action'     => 'index',

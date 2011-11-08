@@ -16,3 +16,6 @@
 [submodule "modules/TwitterBootstrap"]
 	path = modules/TwitterBootstrap
 	url = git@github.com:widmogrod/zf2-twitter-bootstrap-module.git
+[submodule "modules/DataGridBundle"]
+	path = modules/DataGridBundle
+	url = git@github.com:widmogrod/zf2-datagrid-bundle.git
