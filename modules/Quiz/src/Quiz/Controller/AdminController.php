@@ -53,7 +53,7 @@ class AdminController extends ActionController
         /* @var $repository \Quiz\Repository\Question */
         $repository = $em->getRepository('Quiz\Entity\Question');
 
-        $dql = 'SELECT q FROM Quiz\Entity\Question q JOIN q.answers';
+        $dql = 'SELECT q FROM Quiz\Entity\Question q';
         /* @var $q \Doctrine\ORM\Query */
         $q = $em->createQuery($dql);
 

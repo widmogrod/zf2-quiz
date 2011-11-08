@@ -25,13 +25,13 @@ return array(
                 ),
             ),
 
-            'Zend\View\HelperLoader' => array(
-                'parameters' => array(
-                    'map' => array(
-                        'url' => 'Application\View\Helper\Url',
-                    ),
-                ),
-            ),
+//            'Zend\View\HelperLoader' => array(
+//                'parameters' => array(
+//                    'map' => array(
+//                        'url' => 'Application\View\Helper\Url',
+//                    ),
+//                ),
+//            ),
 
             'Zend\View\HelperBroker' => array(
                 'parameters' => array(

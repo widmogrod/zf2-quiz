@@ -1,13 +1,3 @@
-<strong>Module:</strong>        Quiz &raquo;
-<strong>Controller:</strong>    Admin &raquo;
-<strong>Action:</strong>        quizlist
-
-<br/>
 <?php
-try {
     echo $this->raw('grid')->render();
-} catch (\Exception $e) {
-    \Zend\Debug::dump($e->getMessage());
-}
-
 ?>

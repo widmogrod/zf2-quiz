@@ -77,17 +77,17 @@
     <div class="topbar">
       <div class="fill">
         <div class="container">
-          <a class="brand" href="#">Project name</a>
+          <a class="brand" href="#">Quiz</a>
+          <!--
           <ul class="nav">
-            <li class="active"><a href="#">Home</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#contact">Contact</a></li>
+            <li class="dropdown">
+              <a href="<?php echo $this->url('default', array('controller' => 'quizadmin', 'action' => 'quizlist')) ?>">Zarządzaj pytaniami</a>
+              <ul class="dropdown-menu">
+                <li><a href="<?php echo $this->url('default', array('controller' => 'quizadmin', 'action' => 'quizmanage')) ?>">Dodaj</a></li>
+              </ul>
+            </li>
           </ul>
-          <form action="" class="pull-right">
-            <input class="input-small" type="text" placeholder="Username">
-            <input class="input-small" type="password" placeholder="Password">
-            <button class="btn" type="submit">Sign in</button>
-          </form>
+          -->
         </div>
       </div>
     </div>
@@ -95,27 +95,25 @@
     <div class="container">
 
       <div class="content">
-        <div class="page-header">
-          <h1>Page name <small>Supporting text or tagline</small></h1>
-
+        <div class="row">
+          <div class="span14">
+            <div class="well" style="padding: 16px 19px;">
+              <a class="btn small primary" href="<?php echo $this->url('default', array('controller' => 'quizadmin', 'action' => 'quizlist')) ?>">Zarządzaj pytaniami</a>
+              <a class="btn small primary" href="<?php echo $this->url('default', array('controller' => 'quizadmin', 'action' => 'quizmanage')) ?>">Dodaj</a>
+            </div>
+          </div>
         </div>
         <div class="row">
-          <div class="span10">
-            <h2>Main content</h2>
+          <div class="span14">
               <?php echo $this->raw('content'); ?>
-          </div>
-          <div class="span4">
-            <h3>Secondary content</h3>
           </div>
         </div>
       </div>
-
-      <footer>
-        <p>&copy; Company 2011</p>
-      </footer>
-
     </div> <!-- /container -->
 
   </body>
+    <script type="text/javascript">
+        $('.topbar').dropdown();
+    </script>
 </html>
 
