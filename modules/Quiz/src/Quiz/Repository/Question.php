@@ -56,6 +56,7 @@ class Question extends EntityRepository
 		{
 			++$answerNo;
 			if (!isset($data['answers'][$answerNo])) {
+                $em->remove($answer);
 				continue;
 			}
 
@@ -86,10 +87,15 @@ class Question extends EntityRepository
         $result['content'] = $question->getContent();
         $result['type'] = $question->getType();
         $result['answers'] = array();
+        $result['correct'] = null;
+
         $i = 0;
         foreach($question->getAnswers() as $answer)
         {
             ++$i;
+            if ($answer->getIsCorrect()) {
+                $result['correct'] = $i;
+            }
             $result['answers'][$i] = $answer->getName();
         }
 

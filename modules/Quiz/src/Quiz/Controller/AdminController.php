@@ -68,13 +68,13 @@ class AdminController extends ActionController
         /* @var $repository \Quiz\Repository\Question */
         $repository = $em->getRepository('Quiz\Entity\Question');
 
-        $dql = 'SELECT q FROM Quiz\Entity\Question q';
+        $dql = 'SELECT q, (SELECT a.name FROM Quiz\Entity\Answer a WHERE a.question = q.id AND a.isCorrect = true) AS correct_answer FROM Quiz\Entity\Question q ORDER BY q.id DESC';
         /* @var $q \Doctrine\ORM\Query */
         $q = $em->createQuery($dql);
 
         $grid = DataGrid::factory($q);
         $grid->setSpecialColumn('edit', function ($row) {
-            $url = sprintf('/quizadmin/quizmanage?id=%d', $row['id']);
+            $url = sprintf('/quizadmin/quizmanage?id=%d', $row['q_id']);
             return sprintf('<a href="%s">Edytuj</a>', $url);
         });
         $grid->setRenderer(new HtmlTable());

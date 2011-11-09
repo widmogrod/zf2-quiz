@@ -20,10 +20,10 @@ class Question
     const TYPE_IMAGE = 'image';
 
     protected static $availableTypes = array(
-        self::TYPE_AUDIO,
-        self::TYPE_IMAGE,
-        self::TYPE_VIDEO,
-        self::TYPE_TEXT,
+        self::TYPE_AUDIO => self::TYPE_AUDIO,
+        self::TYPE_IMAGE => self::TYPE_IMAGE,
+        self::TYPE_VIDEO => self::TYPE_VIDEO,
+        self::TYPE_TEXT => self::TYPE_TEXT,
     );
 
     /**
@@ -86,7 +86,7 @@ class Question
 
     public function setType($type)
     {
-        if (!isset(static::$availableTypes[$type]))
+        if (!isset(self::$availableTypes[$type]))
         {
             $message = 'Invalid question type "%s". Available types: %s';
             $message = sprintf($message, $type, implode(', ', static::$availableTypes));
@@ -116,6 +116,6 @@ class Question
 
     public static function getAvailableTypes()
     {
-        return static::$availableTypes;
+        return self::$availableTypes;
     }
 }
