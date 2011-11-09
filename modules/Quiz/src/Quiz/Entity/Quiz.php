@@ -22,12 +22,12 @@ class Quiz
     protected $id = null;
 
     /**
-     * @ORM\ManyToOne(targetEntity="User", cascade={"all"}, fetch="LAZY", inversedBy="quizzes")
+     * @ORM\ManyToOne(targetEntity="User", cascade={"persist"}, fetch="LAZY", inversedBy="quizzes")
      */
     protected $user;
 
     /**
-     * @ORM\OneToMany(targetEntity="QuizAnswer", mappedBy="quiz", cascade={"persist", "remove", "merge"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="QuizAnswer", mappedBy="quiz", cascade={"persist"}, orphanRemoval=true)
      * @var \Doctrine\Common\Collections\ArrayCollection
      */
     protected $answers;

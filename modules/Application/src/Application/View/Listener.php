@@ -131,7 +131,7 @@ class Listener implements ListenerAggregate
         return $content;
     }
 
-    public function renderLayout(MvcEvent $e)
+    public function renderLayout(MvcEvent $e, $returnResponse = false)
     {
         $response = $e->getResponse();
         if (!$response) {
@@ -153,7 +153,7 @@ class Listener implements ListenerAggregate
 
         $layout   = $this->view->render($this->layout, $vars);
         $response->setContent($layout);
-//        return $response;
+        return $returnResponse ? $response : null;
     }
 
     public function render404(MvcEvent $e)
@@ -175,7 +175,7 @@ class Listener implements ListenerAggregate
 
         $e->setResult($content);
 
-        return $this->renderLayout($e);
+        return $this->renderLayout($e, true);
     }
 
     public function renderError(MvcEvent $e)
@@ -213,6 +213,6 @@ class Listener implements ListenerAggregate
 
         $e->setResult($content);
 
-        return $this->renderLayout($e);
+        return $this->renderLayout($e, true);
     }
 }

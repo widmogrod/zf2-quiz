@@ -33,9 +33,15 @@ class Module
         ));
     }
 
-    public function getConfig()
+    public function getConfig($env = null)
     {
-        return new Config(include __DIR__ . '/configs/module.config.php');
+        $config = new Config(include __DIR__ . '/configs/module.config.php', true);
+
+        if (is_file(__DIR__ . '/configs/module.config.'.$env.'.php')) {
+            $config->merge(new Config(include __DIR__ . '/configs/module.config.'.$env.'.php'));
+        }
+
+        return $config;
     }
     
     public function initializeView($e)

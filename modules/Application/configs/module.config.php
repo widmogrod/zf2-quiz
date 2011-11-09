@@ -1,4 +1,7 @@
 <?php
+/*
+ * Base configuration options
+ */
 return array(
     'bootstrap_class' => 'Application\Bootstrap',
     'layout'          => 'layouts/layout.phtml',
@@ -12,18 +15,18 @@ return array(
                 'view'  => 'Zend\View\PhpRenderer',
             ),
 
-            'doctrine' => array(
-                'parameters' => array(
-                    'conn' => array(
-                        'driver'   => 'pdo_pgsql',
-                        'host'     => 'localhost',
-                        'port'     => '5432',
-                        'user'     => 'quiz_dev',
-                        'password' => 'quiz_dev',
-                        'dbname'   => 'quiz_dev',
-                    ),
-                ),
-            ),
+//            'doctrine' => array(
+//                'parameters' => array(
+//                    'conn' => array(
+//                        'driver'   => 'pdo_pgsql',
+//                        'host'     => 'localhost',
+//                        'port'     => '5432',
+//                        'user'     => 'youruse',
+//                        'password' => 'yourpassword',
+//                        'dbname'   => 'yourdbname',
+//                    ),
+//                ),
+//            ),
 
 //            'Zend\View\HelperLoader' => array(
 //                'parameters' => array(
@@ -80,8 +83,8 @@ return array(
             'options' => array(
                 'route'    => '/',
                 'defaults' => array(
-                    'controller' => 'index',
-                    'action'     => 'index',
+                    'controller' => 'quizadmin',
+                    'action'     => 'quizlist',
                 ),
             ),
         ),

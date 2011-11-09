@@ -1,7 +1,10 @@
 <?php
+$env = include __DIR__ . '/../configs/env.config.php';
+$host = strtolower(trim($_SERVER['SERVER_NAME']));
+
 // Define application environment
 defined('APPLICATION_ENV')
-    || define('APPLICATION_ENV', (getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'production'));
+    || define('APPLICATION_ENV', (isset($env[$host]) ? $env[$host] : 'production'));
 
 // Ensure ZF is on the include path
 set_include_path(implode(PATH_SEPARATOR, array(
@@ -29,6 +32,19 @@ $moduleManager = new Zend\Module\AutoDependencyManager(
 $bootstrap      = new Zend\Mvc\Bootstrap($moduleManager);
 $application    = new Zend\Mvc\Application;
 $bootstrap->bootstrap($application);
+
+/* @var $r \Zend\Mvc\Router\SimpleRouteStack */
+$r = $application->getRouter();
+
+/* @var $rq \Zend\Http\PhpEnvironment\Request */
+$rq = $application->getRequest();
+if ($rq->server()->get('SERVER_NAME') == 'tomatoe.pl')
+{
+    $uri = $rq->uri();
+    $path = $uri->getPath();
+    $path = str_replace($path, '/programista/quiz/public/', '/');
+    $uri->setPath($path);
+}
 
 //echo '<pre>';
 //print_r($moduleManager->getMergedConfig(false));

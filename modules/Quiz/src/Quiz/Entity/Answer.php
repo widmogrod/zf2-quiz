@@ -21,7 +21,7 @@ class Answer
     protected $id = null;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Question", cascade={"all"}, fetch="LAZY", inversedBy="answers")
+     * @ORM\ManyToOne(targetEntity="Question", cascade={"persist"}, fetch="LAZY", inversedBy="answers")
      * @var Question
      */
     protected $question;

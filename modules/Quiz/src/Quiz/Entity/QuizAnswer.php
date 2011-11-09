@@ -21,14 +21,14 @@ class QuizAnswer
     protected $id = null;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Quiz", cascade={"all"}, fetch="LAZY", inversedBy="answers")
+     * @ORM\ManyToOne(targetEntity="Quiz", cascade={"persist"}, fetch="LAZY", inversedBy="answers")
      * @var Quiz
      */
     protected $quiz;
 
     /**
      * Unidirectional
-     * @ORM\ManyToOne(targetEntity="Answer", cascade={"all"}, fetch="LAZY")
+     * @ORM\ManyToOne(targetEntity="Answer", cascade={"persist"}, fetch="LAZY")
      * @var Answer
      */
     protected $answer;

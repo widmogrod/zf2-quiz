@@ -40,4 +40,59 @@ class Question extends EntityRepository
             var_dump($e->getMessage());
         }
     }
+
+    public function update(array $data, $id)
+    {
+        $em = $this->getEntityManager();
+
+        /* @var $question \Quiz\Entity\Question */
+        $question = $this->find($id);
+        $question->setTitle($data['title']);
+        $question->setContent($data['content']);
+        $question->setType($data['type']);
+
+		$answerNo = 0;
+        foreach($question->getAnswers() as $answer) 
+		{
+			++$answerNo;
+			if (!isset($data['answers'][$answerNo])) {
+				continue;
+			}
+
+			$answerName = $data['answers'][$answerNo];
+            $isCorrect = (isset($data['correct']) && $data['correct'] == $answerNo);
+
+            $answer->setName($answerName);
+            $answer->setIsCorrect($isCorrect);
+        }
+
+        //$em->persist($question);
+
+        try {
+            $em->flush();
+        } catch (\Exception $e) {
+            var_dump(__METHOD__.__LINE__);
+            var_dump($e->getMessage());
+        }
+    }
+
+    public function getDataForForm($id)
+    {
+        /* @var $question \Quiz\Entity\Question */
+        $question = $this->find($id);
+
+        $result = array();
+        $result['title'] = $question->getTitle();
+        $result['content'] = $question->getContent();
+        $result['type'] = $question->getType();
+        $result['answers'] = array();
+        $i = 0;
+        foreach($question->getAnswers() as $answer)
+        {
+            ++$i;
+            $result['answers'][$i] = $answer->getName();
+        }
+
+        return $result;
+    }
 }

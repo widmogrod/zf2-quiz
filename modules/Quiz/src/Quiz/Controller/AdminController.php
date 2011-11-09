@@ -17,28 +17,43 @@ class AdminController extends ActionController
         /* @var $rq \Zend\Http\PhpEnvironment\Request */
         $rq = $this->getRequest();
 
+        /* @var $doctrine \SpiffyDoctrine\Service\Doctrine */
+        $doctrine = $this->getLocator()->get('doctrine');
+        /* @var $em \Doctrine\ORM\EntityManager */
+        $em = $doctrine->getEntityManager();
+        /* @var $repository \Quiz\Repository\Question */
+        $repository = $em->getRepository('Quiz\Entity\Question');
+
         $form = new Question();
 
         $result = array(
             'form' => $form
         );
 
+        if ($id = (int) $rq->query()->get('id')) {
+            $data = $repository->getDataForForm($id);
+            $form->populate($data);
+        }
+
         if (!$rq->isPost()) {
             return $result;
         }
 
-        /* @var $doctrine \SpiffyDoctrine\Service\Doctrine */
-        $doctrine = $this->getLocator()->get('doctrine');
-        /* @var $em \Doctrine\ORM\EntityManager */
-        $em = $doctrine->getEntityManager();
-
-        if (!$form->isValid($rq->post()->toArray())) {
+        $data = $rq->post()->toArray();
+        if (!$form->isValid($data)) {
             return $result;
         }
 
-        /* @var $repository \Quiz\Repository\Question */
-        $repository = $em->getRepository('Quiz\Entity\Question');
-        $repository->create($rq->post()->toArray());
+        if ($id) {
+            $repository->update($data, $id);
+        } else {
+            $repository->create($data);
+        }
+
+        $this->plugin('redirect')->toRoute('default', array(
+            'controller' => 'quizadmin',
+            'action' => 'quizlist'
+        ));
 
         return $result;
     }
@@ -58,6 +73,10 @@ class AdminController extends ActionController
         $q = $em->createQuery($dql);
 
         $grid = DataGrid::factory($q);
+        $grid->setSpecialColumn('edit', function ($row) {
+            $url = sprintf('/quizadmin/quizmanage?id=%d', $row['id']);
+            return sprintf('<a href="%s">Edytuj</a>', $url);
+        });
         $grid->setRenderer(new HtmlTable());
 
         return array(

@@ -27,7 +27,7 @@ class User
     protected $username;
 
     /**
-     * @ORM\OneToMany(targetEntity="Quiz", mappedBy="user", cascade={"persist", "remove", "merge"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="Quiz", mappedBy="user", cascade={"persist","remove"}, orphanRemoval=true)
      * @var \Doctrine\Common\Collections\ArrayCollection
      */
     protected $quizzes;
