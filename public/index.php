@@ -6,6 +6,9 @@ $host = strtolower(trim($_SERVER['SERVER_NAME']));
 defined('APPLICATION_ENV')
     || define('APPLICATION_ENV', (isset($env[$host]) ? $env[$host] : 'production'));
 
+defined('APPLICATION_PATH')
+    || define('APPLICATION_PATH', realpath(__DIR__ . '/..'));
+
 // Ensure ZF is on the include path
 set_include_path(implode(PATH_SEPARATOR, array(
     realpath(__DIR__ . '/../library'),
@@ -34,20 +37,17 @@ $application    = new Zend\Mvc\Application;
 $bootstrap->bootstrap($application);
 
 /* @var $r \Zend\Mvc\Router\SimpleRouteStack */
-$r = $application->getRouter();
+//$r = $application->getRouter();
+//
+///* @var $rq \Zend\Http\PhpEnvironment\Request */
+//$rq = $application->getRequest();
+//if ($rq->server()->get('SERVER_NAME') == 'tomatoe.pl')
+//{
+//    $uri = $rq->uri();
+//    $path = $uri->getPath();
+//    $path = str_replace($path, '/programista/quiz/public/', '/');
+//    $uri->setPath($path);
+//}
 
-/* @var $rq \Zend\Http\PhpEnvironment\Request */
-$rq = $application->getRequest();
-if ($rq->server()->get('SERVER_NAME') == 'tomatoe.pl')
-{
-    $uri = $rq->uri();
-    $path = $uri->getPath();
-    $path = str_replace($path, '/programista/quiz/public/', '/');
-    $uri->setPath($path);
-}
-
-//echo '<pre>';
-//print_r($moduleManager->getMergedConfig(false));
-//echo '</pre>';
-
+# todo try cache and logging
 $application->run()->send();
