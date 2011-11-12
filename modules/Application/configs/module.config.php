@@ -10,7 +10,7 @@ return array(
     'di'              => array(
         'instance' => array(
             'alias' => array(
-                'index' => 'Quiz\Controller\IndexController',
+                'index' => 'quizapp',
                 'error' => 'Application\Controller\ErrorController',
                 'view'  => 'Zend\View\PhpRenderer',
             ),
@@ -85,6 +85,16 @@ return array(
                 'defaults' => array(
                     'controller' => 'quizadmin',
                     'action'     => 'quizlist',
+                ),
+            ),
+        ),
+        'app' => array(
+            'type' => 'Zend\Mvc\Router\Http\Literal',
+            'options' => array(
+                'route'    => '/app',
+                'defaults' => array(
+                    'controller' => 'quizapp',
+                    'action'     => 'index',
                 ),
             ),
         ),

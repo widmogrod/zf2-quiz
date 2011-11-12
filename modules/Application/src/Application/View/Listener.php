@@ -143,6 +143,7 @@ class Listener implements ListenerAggregate
         }
 
         $footer   = $e->getParam('footer', false);
+        $layout   = $e->getParam('layout', $this->layout);
         $vars     = array('footer' => $footer);
 
         if (false !== ($contentParam = $e->getParam('content', false))) {
@@ -151,7 +152,7 @@ class Listener implements ListenerAggregate
             $vars['content'] = $e->getResult();
         }
 
-        $layout   = $this->view->render($this->layout, $vars);
+        $layout   = $this->view->render($layout, $vars);
         $response->setContent($layout);
         return $returnResponse ? $response : null;
     }
@@ -214,5 +215,15 @@ class Listener implements ListenerAggregate
         $e->setResult($content);
 
         return $this->renderLayout($e, true);
+    }
+
+    public function setLayout($layout)
+    {
+        $this->layout = $layout;
+    }
+
+    public function getLayout()
+    {
+        return $this->layout;
     }
 }
