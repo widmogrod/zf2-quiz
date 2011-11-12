@@ -4,6 +4,7 @@ return array(
         'instance' => array(
             'alias' => array(
                 'quizadmin' => 'Quiz\Controller\AdminController',
+                'quizapp' => 'Quiz\Controller\IndexController',
             ),
 
             'Zend\View\PhpRenderer' => array(
@@ -11,6 +12,46 @@ return array(
                     'options'  => array(
                         'script_paths' => array(
                             'quiz' => __DIR__ . '/../views',
+                        ),
+                    ),
+                ),
+            ),
+
+            'assetic-configuration' => array(
+                'parameters' => array(
+                    'config' => array(
+                        'controllers' => array(
+                            'quizapp' => array(
+                                '@quiz_app_css',
+                            ),
+                            'quizadmin' => array(
+                                '@twitter_bootstrap_css'
+                            ),
+                        ),
+
+                        'modules' => array(
+                            'quiz' => array(
+                                'root_path' => __DIR__ . '/../assets',
+                                'collections' => array(
+                                    'quiz_app_css' => array(
+                                        'assets' => array(
+                                            'css/reset.css',
+                                            'css/app.css',
+                                        ),
+//                                        'filters' => array(
+//                                            'cssembedfilter' => array('name' => 'Assetic\Filter\CssEmbedFilter')
+//                                        )
+                                    ),
+                                    'quiz_app_images' => array(
+                                        'assets' => array(
+                                            'images/*.png',
+                                        ),
+                                        'options' => array(
+                                            'move_raw' => true,
+                                        )
+                                    ),
+                                ),
+                            ),
                         ),
                     ),
                 ),

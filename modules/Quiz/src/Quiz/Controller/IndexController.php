@@ -5,81 +5,49 @@ namespace Quiz\Controller;
 use Zend\Mvc\Controller\ActionController;
 use Zend\Mvc\LocatorAware;
 
+require 'facebook/facebook.php';
+
 class IndexController extends ActionController implements LocatorAware
 {
+
     public function indexAction()
     {
-        /* @var $doctrine \SpiffyDoctrine\Service\Doctrine */
-        $doctrine = $this->getLocator()->get('doctrine');
-        /* @var $em \Doctrine\ORM\EntityManager */
-        $em = $doctrine->getEntityManager();
-
-//        $user = new \Quiz\Entity\User();
-//        $user->setUsername('gabriel');
+//        $facebook = new \Facebook(array(
+//          'appId'  => '322152434467439',
+//          'secret' => 'bd125fa90026c5faba6ed397026c53f0',
+//        ));
 //
-//        try {
-//            $em->persist($user);
-////            $em->flush();
-//        } catch(\Exception $e) {
-//            var_dump($e->getMessage());
+//        $user = $facebook->getUser();
+//        if ($user) {
+//            try {
+//                // Proceed knowing you have a logged in user who's authenticated.
+//                $user_profile = $facebook->api('/me');
+//                var_dump($user_profile);
+//            } catch (FacebookApiException $e) {
+//                error_log($e);
+//                $user = null;
+//            }
 //        }
 //
-        $question = new \Quiz\Entity\Question();
-        $question->setTitle('pierwsze pytanie');
-        $question->setContent('Jak masz na imie?');
-
-
-        $answer = new \Quiz\Entity\Answer();
-        $answer->setName('Gabriel');
-        $answer->setIsCorrect(true);
-        $question->addAnswer($answer);
-
-        $answer = new \Quiz\Entity\Answer();
-        $answer->setName('Rafał');
-        $answer->setIsCorrect(false);
-        $question->addAnswer($answer);
-
-        $answer = new \Quiz\Entity\Answer();
-        $answer->setName('Michał');
-        $answer->setIsCorrect(false);
-        $question->addAnswer($answer);
-//        $question->addAnswer($answer);
-
-        try {
-            $em->persist($question);
-            $em->flush();
-        } catch(\Exception $e) {
-            var_dump($e->getMessage());
-        }
-//
-//        $records = $em->getRepository('\Quiz\Entity\User')->findAll();
-//        var_dump($records);
-//
-//        $records = $em->getRepository('\Quiz\Entity\Question')->findAll();
-//        var_dump($records);
-//
-//        $records = $em->getRepository('\Quiz\Entity\Answer')->findAll();
-//        var_dump($records);
-
-//        $dql = 'SELECT q, a FROM Quiz\Entity\Question q JOIN q.answers a';
-////        $dql = 'SELECT q, a FROM Quiz\Entity\Answer a JOIN a.question q';
-//        /* @var $q \Doctrine\ORM\Query */
-//        $q = $em->createQuery($dql);
-//
-//        try {
-//            $result = $q->getResult();
-//            $resultA = $q->getArrayResult();
-//
-//            var_dump($resultA);
-//        } catch(\Exception $e) {
-//            var_dump($e->getMessage());
+//        if ($user) {
+//            $logoutUrl = $facebook->getLogoutUrl();
+//        } else {
+//            $loginUrl = $facebook->getLoginUrl();
+////            $this->plugin('redirect')->toUrl($loginUrl);
 //        }
-//
-//        /* @var $question \Quiz\Entity\Question */
-//        $question = $em->getRepository('\Quiz\Entity\Question')->find(4);
-//        $em->remove($question);
-//        $em->flush();
 
-        return array();
+//        return array('loginUrl' => $loginUrl);
+    }
+
+    protected function attachDefaultListeners()
+    {
+        parent::attachDefaultListeners();
+
+        /** @var $events \Zend\EventManager\EventManager */
+        $events = $this->events();
+
+        $events->attach('dispatch', function ($e) {
+            $e->setParam('layout', 'layouts/app.phtml');
+        }, 100);
     }
 }

@@ -1,0 +1,78 @@
+html, body {
+    font-family: "Myriad Pro", Arial, Helvetica;
+    font-size: 18px;
+    color: #123367;
+}
+
+p {
+    margin-bottom: 1em;
+    font-weight: lighter;
+    text-align: justify;
+}
+strong {font-weight: bold;}
+.header p {font-size: 15px; font-weight: normal; margin-bottom: .5em}
+
+h1 {
+    font-size: 32px;
+    font-weight: bold;
+}
+
+h2 {
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.c {text-align: center;}
+.uc {text-transform: uppercase;}
+
+.hr {
+    background: transparent url("../images/bg-separator.png") top center no-repeat;
+    clear: both;
+    height: 60px;
+
+    margin-left: -55px;
+    margin-right: -50px;
+}
+
+.btn-start {
+    background: transparent url("../images/btn-start.png") 0 0 no-repeat;
+    height: 100px;
+    width: 340px;
+    display: block;
+    overflow: hidden;
+    text-indent: -200em;
+    /*margin: 0 auto;*/
+}
+
+#container {
+    width: 520px;
+    background-color: #ced228;
+    background-image: url("../images/bg-main-content.png");
+    background-position: 50% 50%;
+    background-repeat: repeat-y;
+}
+
+#header {
+    height:76px;
+
+    background-image: url("../images/bg-main-top.png");
+    background-position: top center;
+    background-repeat: no-repeat;
+}
+#main {
+    min-height: 300px;
+    padding: 20px 90px 5px;
+}
+
+#wrapper {
+    background-image: url("../images/bg-main-content.png");
+    background-position: 50% 76px;
+    background-repeat: repeat-y;
+}
+
+#footer {
+    background-image: url("../images/bg-foot.png");
+    background-position: bottom center;
+    background-repeat: no-repeat;
+    height: 200px;
+}
