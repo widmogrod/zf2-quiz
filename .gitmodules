@@ -10,9 +10,9 @@
 [submodule "modules/ZendDeveloperTools"]
 	path = modules/ZendDeveloperTools
 	url = https://github.com/zendframework/ZendDeveloperTools.git
-[submodule "modules/Assetic"]
-	path = modules/Assetic
-	url = git@github.com:widmogrod/zf2-assetic-module.git
+[submodule "modules/AsseticBundle"]
+	path = modules/AsseticBundle
+	url = git@github.com:widmogrod/zf2-twitter-bootstrap-module.git
 [submodule "modules/TwitterBootstrap"]
 	path = modules/TwitterBootstrap
 	url = git@github.com:widmogrod/zf2-twitter-bootstrap-module.git
