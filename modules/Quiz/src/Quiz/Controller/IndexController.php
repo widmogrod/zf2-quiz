@@ -45,6 +45,20 @@ class IndexController extends ActionController implements LocatorAware
         return array();
     }
 
+    public function getquizAction()
+    {
+        /** @var $em  \Doctrine\ORM\EntityManager */
+        $em = $this->getLocator()->get('doctrine')->getEntityManager();
+        /** @var $quiz \Quiz\Repository\Quiz */
+        $quiz = $em->getRepository('Quiz\Entity\Quiz');
+
+        $questions = $quiz->getQuestions();
+
+        $response = new \Zend\Http\PhpEnvironment\Response();
+        $response->setContent(\Zend\Json\Json::encode(array('questions' => $questions)));
+        return $response;
+    }
+
     protected function attachDefaultListeners()
     {
         parent::attachDefaultListeners();

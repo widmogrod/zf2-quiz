@@ -128,6 +128,11 @@ h2 {
 
 }
 
+a[onclick] {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
 #loader {
     display: none;
     width: 32px;
@@ -141,4 +146,17 @@ h2 {
     z-index: 9999;
 
     background: transparent url("../images/indicator_blue_large.gif") 0 0 no-repeat;
+}
+
+#messager {
+    color: #d29e11;
+    display: block;
+    width: 340px;
+    min-height: 32px;
+
+    position: absolute;
+    top:50%;
+    left: 50%;
+    margin-left: -170px;
+    margin-top: -32px;
 }
