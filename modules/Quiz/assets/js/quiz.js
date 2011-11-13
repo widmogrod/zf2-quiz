@@ -39,13 +39,89 @@
                         'id': 3
                     }
                 ]
+            },
+            {
+                'title': 'JAKI ZAMEK WIDAĆ NA FILMIE?',
+                'content': 'http://www.youtube.com/watch?v=6cv9H0m0v3o',
+                'type': 'video',
+                'answers': [
+                    {
+                        'answer': 'Wawel',
+                        'id': 1
+                    },
+                    {
+                        'answer': 'Zamek w Nowym Sączu',
+                        'id': 2
+                    },
+                    {
+                        'answer': 'Zamek w Targu Nowotarskim',
+                        'id': 3
+                    }
+                ]
+            },
+            {
+                'title': 'Co to za dzwięk?',
+                'content': 'http://www.youtube.com/watch?v=6cv9H0m0v3o',
+                'type': 'video',
+                'answers': [
+                    {
+                        'answer': 'Hejnał mariacki',
+                        'id': 1
+                    },
+                    {
+                        'answer': 'Marsz dąbrowskiego',
+                        'id': 2
+                    },
+                    {
+                        'answer': 'Mrrr mtrr',
+                        'id': 3
+                    }
+                ]
+            },
+            {
+                'title': 'JAKI ZAMEK WIDAĆ NA FILMIE?',
+                'content': 'http://www.youtube.com/watch?v=6cv9H0m0v3o',
+                'type': 'video',
+                'answers': [
+                    {
+                        'answer': 'Wawel',
+                        'id': 1
+                    },
+                    {
+                        'answer': 'Zamek w Nowym Sączu',
+                        'id': 2
+                    },
+                    {
+                        'answer': 'Zamek w Targu Nowotarskim',
+                        'id': 3
+                    }
+                ]
+            },
+            {
+                'title': 'Co to za dzwięk?',
+                'content': 'http://www.youtube.com/watch?v=6cv9H0m0v3o',
+                'type': 'video',
+                'answers': [
+                    {
+                        'answer': 'Hejnał mariacki',
+                        'id': 1
+                    },
+                    {
+                        'answer': 'Marsz dąbrowskiego',
+                        'id': 2
+                    },
+                    {
+                        'answer': 'Mrrr mtrr',
+                        'id': 3
+                    }
+                ]
             }
         ]
     };
 
     var $quiz = {
         'options': {
-            'question_timeout': 20
+            'question_timeout': 8
         },
         'elements': {
             'question': '#question',
@@ -106,7 +182,7 @@
                 var currentTime = $($quiz.elements.question_time).text(),
                     currentTime = parseInt(currentTime);
 
-                if (currentTime < 0) {
+                if (currentTime <= 0) {
                     $quiz.actions.nextQuestion();
                 } else {
                     $($quiz.elements.question_time).text(--currentTime);
@@ -140,9 +216,14 @@
                 $($quiz.elements.question).html(q);
                 $($quiz.elements.answers).html(answers.join("\n"));
 
-                $quiz.actions.hideLoader();
+                $($quiz.elements.answers).find('li[answerId]').bind('click', $quiz.actions.answerClicked);
 
+                $quiz.actions.hideLoader();
                 $quiz.actions.startTimer();
+            },
+            'answerClicked':function(e) {
+                console.log('clicked answerClicked');
+                $quiz.actions.nextQuestion();
             }
         }
     };

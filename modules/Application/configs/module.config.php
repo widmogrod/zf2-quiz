@@ -89,9 +89,11 @@ return array(
             ),
         ),
         'app' => array(
-            'type' => 'Zend\Mvc\Router\Http\Literal',
+            //'type' => 'Zend\Mvc\Router\Http\Literal',
+            'type'    => 'Zend\Mvc\Router\Http\Segment',
             'options' => array(
-                'route'    => '/app',
+                //'route'    => '/app',
+                'route'    => '/app[/:action]',
                 'defaults' => array(
                     'controller' => 'quizapp',
                     'action'     => 'index',

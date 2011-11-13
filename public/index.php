@@ -2,6 +2,9 @@
 $env = include __DIR__ . '/../configs/env.config.php';
 $host = strtolower(trim($_SERVER['SERVER_NAME']));
 
+error_reporting(E_ALL);
+ini_set('display_errors', true);
+
 // Define application environment
 defined('APPLICATION_ENV')
     || define('APPLICATION_ENV', (isset($env[$host]) ? $env[$host] : 'production'));
@@ -49,5 +52,14 @@ $bootstrap->bootstrap($application);
 //    $uri->setPath($path);
 //}
 
-# todo try cache and logging
-$application->run()->send();
+try
+{
+    /** @var $response \Zend\Http\Response */
+    $response = $application->run();
+    $response->send();
+} catch (\Exception $e) {
+    \Zend\Debug::dump($e->getMessage());
+    \Zend\Debug::dump($e->getFile());
+    \Zend\Debug::dump($e->getLine());
+}
+
