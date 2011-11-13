@@ -25,7 +25,9 @@ return array(
                                 '@quiz_app_css',
                             ),
                             'quizadmin' => array(
-                                '@twitter_bootstrap_css'
+                                '@twitter_bootstrap_css',
+                                '@quiz_admin_css',
+                                '@quiz_admin_js'
                             ),
                         ),
 
@@ -50,6 +52,18 @@ return array(
                                             'move_raw' => true,
                                         )
                                     ),
+
+                                    'quiz_admin_css' => array(
+                                        'assets' => array(
+                                            'css/admin/admin.css'
+                                        )
+                                    ),
+
+                                    'quiz_admin_js' => array(
+                                        'assets' => array(
+                                            'http://html5shim.googlecode.com/svn/trunk/html5.js'
+                                        )
+                                    )
                                 ),
                             ),
                         ),

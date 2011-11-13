@@ -37,6 +37,12 @@ class IndexController extends ActionController implements LocatorAware
 //        }
 
 //        return array('loginUrl' => $loginUrl);
+        return array();
+    }
+
+    public function startAction()
+    {
+        return array();
     }
 
     protected function attachDefaultListeners()

@@ -1,22 +1,20 @@
 <?php echo $this->plugin('doctype')->setDoctype(\Zend\View\Helper\Doctype::HTML5); ?>
+<html lang="en">
 <head>
-<!--
-    Author: Gabriel Habryn
-    Email: widmogrod@gmail.com
-    Created: 2011-11
--->
-<?php
-    echo $this->plugin('HeadTitle');
-    echo $this->plugin('HeadMeta');
-    echo $this->plugin('HeadMeta');
-    echo $this->plugin('HeadStyle');
-    echo $this->plugin('HeadScript');
-?>
+    <meta charset="utf-8">
+    <?php
+        echo $this->plugin('HeadTitle');
+        echo $this->plugin('HeadMeta');
+        echo $this->plugin('HeadLink');
+        echo $this->plugin('HeadStyle');
+        echo $this->plugin('HeadScript');
+    ?>
 </head>
 <body>
 <div id="container">
     <div id="header">
-
+        <span class="fl question question-number"><span>Pytanie</span></span>
+        <span class="fr question question-time"><span>30:30</span></span>
     </div>
     <div id="wrapper">
         <div id="main">
@@ -24,8 +22,11 @@
         </div>
     </div>
     <div id="footer">
-        
+        <!-- none -->
     </div>
 </div>
+<?php
+    echo $this->plugin('InlineScript');
+?>
 </body>
 </html>
