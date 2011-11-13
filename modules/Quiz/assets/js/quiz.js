@@ -182,7 +182,7 @@
 
                 if (!$quiz.questionsData)
                 {
-                    __log('$quiz.questionsData:', $quiz.questionsData);
+                    __log('nextQuestion.questionsData:', $quiz.questionsData);
 
                     $quiz.actions.showError(
                         $quiz.errors.on_load
@@ -204,6 +204,8 @@
             },
             'questionEnds': function(){
                 $quiz.actions.stopTimer();
+                $quiz.actions.clearCanvas();
+                $quiz.actions.showLoader();
             },
             'loadQuestions': function() {
                 if (null === $quiz.questionsData)
@@ -215,17 +217,22 @@
                         'dataType': 'json',
                         'timeout': 10*1000,
                         'success': function(data) {
+                            __log('loadQuestions:data:', data);
+
+                            $quiz.questionsData = data.questions;
+
                             try {
-                                $quiz.questionsData = data.questions;
                                 $quiz.actions.nextQuestion();
                             } catch (e) {
-                                __log(e);
+                                __log('loadQuestions:cached:', e);
+
+                                $quiz.actions.showError(
+                                    $quiz.errors.on_load
+                                );
                             }
                         }
                     });
                 }
-
-                $quiz.actions.nextQuestion();
             },
             'showLoader': function() {
                 $($quiz.elements.loader).show();
@@ -273,9 +280,15 @@
                 var q;
                 switch(question.type)
                 {
+                    case 'wideo':
                     case 'video':
+                    case 'audio':
                         var videoId = question.content.match(/v=([^?&]+)/)[1];
                         q = '<iframe width="340" height="203" src="http://www.youtube.com/embed/'+ videoId +'?autoplay=1" frameborder="0" allowfullscreen></iframe>';
+                        break;
+
+                    case 'text':
+                        q = '<p>'+ question.content+ '</p>';
                         break;
                 }
 
@@ -283,7 +296,7 @@
 
                 answers.push('<ul class="answers">');
                 $(question.answers).each(function(k, item) {
-                    answers.push('<li answerId="'+ item.id +'">'+ item.answer +'</li>');
+                    answers.push('<li answerId="'+ item.id +'">'+ item.name +'</li>');
                 });
                 answers.push('</ul>');
 
@@ -325,6 +338,12 @@
             'showError': function(errorMessage) {
                 $quiz.actions.hideLoader();
                 $($quiz.elements.error_container).html(errorMessage).show();
+            },
+            'clearCanvas': function() {
+                $($quiz.elements.question_title).text('');
+                $($quiz.elements.question_no).text('');
+                $($quiz.elements.question).html('');
+                $($quiz.elements.answers).html('');
             }
         }
     };

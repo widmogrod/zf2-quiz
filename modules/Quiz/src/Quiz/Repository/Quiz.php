@@ -14,6 +14,15 @@ class Quiz extends EntityRepository
 {
     public function getQuestions()
     {
-        
+        $dql = 'SELECT q, a FROM Quiz\Entity\Question q JOIN q.answers a';
+
+        $q = $this->getEntityManager()->createQuery($dql);
+
+
+        try {
+            return $q->getArrayResult();
+        } catch (\Exception $e) {
+            
+        }
     }
 }

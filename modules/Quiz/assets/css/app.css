@@ -110,6 +110,10 @@ h2 {
     padding-left: 55px;
 }
 
+#question {
+    min-height: 240px;
+}
+
 .answers {
     margin-top: 20px;
     padding-left: 20px;
@@ -130,7 +134,7 @@ h2 {
 
 a[onclick] {
     text-decoration: underline;
-    cursor: pointer;
+    cursor: pointer !important;
 }
 
 #loader {
