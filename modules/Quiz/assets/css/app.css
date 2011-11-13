@@ -62,12 +62,14 @@ h2 {
 #main {
     min-height: 300px;
     padding: 20px 90px 5px;
+    position: relative;
 }
 
 #wrapper {
     background-image: url("../images/bg-main-content.png");
     background-position: 50% 76px;
     background-repeat: repeat-y;
+    position: relative;
 }
 
 #footer {
@@ -124,4 +126,19 @@ h2 {
 .answers li:hover {
     background-position: 0 -5px;
 
+}
+
+#loader {
+    display: none;
+    width: 32px;
+    height: 32px;
+
+    position: absolute;
+    top:50%;
+    left: 50%;
+    margin-left: -16px;
+    margin-top: -16px;
+    z-index: 9999;
+
+    background: transparent url("../images/indicator_blue_large.gif") 0 0 no-repeat;
 }

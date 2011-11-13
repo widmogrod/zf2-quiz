@@ -23,6 +23,7 @@ return array(
                         'controllers' => array(
                             'quizapp' => array(
                                 '@quiz_app_css',
+                                '@quiz_app_js',
                             ),
                             'quizadmin' => array(
                                 '@twitter_bootstrap_css',
@@ -47,9 +48,16 @@ return array(
                                     'quiz_app_images' => array(
                                         'assets' => array(
                                             'images/*.png',
+                                            'images/*.gif',
                                         ),
                                         'options' => array(
                                             'move_raw' => true,
+                                        )
+                                    ),
+                                    'quiz_app_js' => array(
+                                        'assets' => array(
+                                            'js/jquery.min.js',
+                                            'js/quiz.js',
                                         )
                                     ),
 
