@@ -186,6 +186,12 @@ class Question extends TwitterForm\Form
             unset($values['correct']);
         }
 
+        if (empty($values['content']))
+        {
+            $type = $values['type'];
+            $values['content'] = $values[sprintf('content_%s', $type)];
+        }
+
         return parent::populate($values);
     }
 
