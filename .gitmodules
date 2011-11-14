@@ -19,3 +19,6 @@
 [submodule "modules/DataGridBundle"]
 	path = modules/DataGridBundle
 	url = git@github.com:widmogrod/zf2-datagrid-bundle.git
+[submodule "modules/FacebookBundle"]
+	path = modules/FacebookBundle
+	url = git@github.com:widmogrod/zf2-facebook-module.git
