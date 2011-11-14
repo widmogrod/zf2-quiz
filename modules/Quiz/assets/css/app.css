@@ -87,6 +87,9 @@ h2 {
     line-height: 50px;
     font-size: 22px;
     font-weight: bold;
+
+    
+    display: none;
 }
 .question-number
 {
@@ -111,7 +114,7 @@ h2 {
 }
 
 #question {
-    min-height: 240px;
+    min-height: 220px;
 }
 
 .answers {

@@ -43,6 +43,7 @@ class AdminController extends ActionController
         if (!$form->isValid($data)) {
             return $result;
         }
+        $data = $form->getValues();
 
         if ($id) {
             $repository->update($data, $id);
@@ -50,10 +51,10 @@ class AdminController extends ActionController
             $repository->create($data);
         }
 
-        $this->plugin('redirect')->toRoute('default', array(
-            'controller' => 'quizadmin',
-            'action' => 'quizlist'
-        ));
+//        $this->plugin('redirect')->toRoute('default', array(
+//            'controller' => 'quizadmin',
+//            'action' => 'quizlist'
+//        ));
 
         return $result;
     }

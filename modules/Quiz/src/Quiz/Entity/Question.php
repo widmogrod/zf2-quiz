@@ -49,7 +49,7 @@ class Question
     protected $content;
 
     /**
-     * @ORM\OneToMany(targetEntity="Answer", mappedBy="question", cascade={"persist, remove"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="Answer", mappedBy="question", cascade={"persist", "remove"}, orphanRemoval=true)
      * @var \Doctrine\Common\Collections\ArrayCollection
      */
     protected $answers;

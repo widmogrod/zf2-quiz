@@ -69,7 +69,9 @@ return array(
 
                                     'quiz_admin_js' => array(
                                         'assets' => array(
-                                            'http://html5shim.googlecode.com/svn/trunk/html5.js'
+                                            'js/jquery.min.js',
+                                            'http://html5shim.googlecode.com/svn/trunk/html5.js',
+                                            'js/admin.js',
                                         )
                                     )
                                 ),

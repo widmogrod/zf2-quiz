@@ -5,7 +5,8 @@
  
 namespace Quiz\Form;
 
-use \TwitterBootstrap\Form as TwitterForm;
+use \TwitterBootstrap\Form as TwitterForm,
+    \Quiz\Entity\Question as QuestionEntity;
 
 class Question extends TwitterForm\Form
 {
@@ -17,32 +18,85 @@ class Question extends TwitterForm\Form
 
         $this->addElement('text', 'title', array(
             'label' => 'Tytuł',
+            'description' => 'Imperatyw skłaniający do działania, np.: "Odpowiedz na pytanie" lub "Co widzisz na zdjęciu?"',
             'required' => true,
             'filters' => array(
                 'StripTags',
             ),
             'validators' => array(
-                array('StringLength', array('max' => 255))
+                array(
+                    'validator' => 'StringLength',
+                    'options' => array('max' => 255)
+                )
             )
         ));
 
         $this->addElement('select', 'type', array(
             'label' => 'Rozaj pytania',
-            'multiOptions' => \Quiz\Entity\Question::getAvailableTypes(),
+            'multiOptions' => QuestionEntity::getAvailableTypes(),
             'required' => true
         ));
 
-        $this->addElement('textarea', 'content', array(
-            'label' => 'Treść pytania',
-            'description' => 'Treść pytania zależy od rodzaju pytania',
-            'required' => true,
-            'filters' => array(
-                'StripTags',
-            ),
-            'validators' => array(
-                array('StringLength', array('max' => 255))
-            )
-        ));
+        /*
+         * Diffrent types of questions
+         */
+        {{
+            $this->addElement('textarea', 'content_' . QuestionEntity::TYPE_TEXT , array(
+                'label' => 'Treść pytania',
+                'description' => 'Proszę podać treść pytania, na które użytkownik ma odpowiedzieć',
+                'filters' => array(
+                    'StripTags',
+                ),
+                'validators' => array(
+                    array(
+                        'validator' => 'StringLength',
+                        'options' => array('max' => 255)
+                    )
+                )
+            ));
+            $this->addElement('file', 'content_' . QuestionEntity::TYPE_IMAGE , array(
+                'label' => 'Treść pytania',
+                'description' => 'Proszę załączyć zdjęcie o szerokości nie mniejszej niż 340px',
+                'destination' => APPLICATION_PATH . '/public/upload',
+                'validators' => array(
+                    'IsImage',
+                    array(
+                        'validator' => 'ImageSize',
+                        'options' => array(
+                            'minWidth' => 340
+                        )
+                    ),
+                )
+            ));
+            $this->addElement('text', 'content_' . QuestionEntity::TYPE_AUDIO , array(
+                'label' => 'Treść pytania',
+                'description' => 'Proszę wkleić link do materiału w serwisie YouTube',
+                'filters' => array(
+                    'StripTags',
+                ),
+                'validators' => array(
+                    array(
+                        'validator' => 'StringLength',
+                        'options' => array('max' => 255)
+                    ),
+                    new \Quiz\Validator\YouTube()
+                )
+            ));
+            $this->addElement('text', 'content_' . QuestionEntity::TYPE_VIDEO , array(
+                'label' => 'Treść pytania',
+                'description' => 'Proszę wkleić link do materiału w serwisie YouTube',
+                'filters' => array(
+                    'StripTags',
+                ),
+                'validators' => array(
+                    array(
+                        'validator' => 'StringLength',
+                        'options' => array('max' => 255)
+                    ),
+                    new \Quiz\Validator\YouTube()
+                )
+            ));
+        }}
 
         $this->initAnswers();
 
@@ -97,8 +151,33 @@ class Question extends TwitterForm\Form
             $this->changeAnswerAdditionalElementToCheckedCheckbox($data['correct']);
         }
 
+        /*
+         * Enable validation fo content, depending of type.
+         */
+        $type = $data['type'];
+        switch($type)
+        {
+            case QuestionEntity::TYPE_AUDIO:
+            case QuestionEntity::TYPE_IMAGE:
+            case QuestionEntity::TYPE_VIDEO:
+            case QuestionEntity::TYPE_TEXT:
+                $this->getElement(sprintf('content_%s', $type))->setRequired(true);
+                break;
+        }
+
         return parent::isValid($data);
     }
+
+    public function getValues($suppressArrayNotation = false)
+    {
+        $result = parent::getValues($suppressArrayNotation);
+
+        $type = $result['type'];
+        $result['content'] = $result[sprintf('content_%s', $type)];
+
+        return $result;
+    }
+
 
     public function populate(array $values)
     {

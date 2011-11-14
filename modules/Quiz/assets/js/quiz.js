@@ -148,6 +148,8 @@
             'question': '#question',
             'question_no': '#question-no',
             'question_time': '#question-time',
+            'question_no_placeholder': '.question-number',
+            'question_time_placeholder': '.question-time',
             'question_title': '#question_title',
             'answers': '#answers',
             'loader': '#loader',
@@ -205,6 +207,10 @@
             'questionEnds': function(){
                 $quiz.actions.stopTimer();
                 $quiz.actions.clearCanvas();
+                $quiz.actions.hideControls();
+
+                $($quiz.elements.question_title).text('Wyniki');
+
                 $quiz.actions.showLoader();
             },
             'loadQuestions': function() {
@@ -223,6 +229,7 @@
 
                             try {
                                 $quiz.actions.nextQuestion();
+                                $quiz.actions.showControls();
                             } catch (e) {
                                 __log('loadQuestions:cached:', e);
 
@@ -287,6 +294,10 @@
                         q = '<iframe width="340" height="203" src="http://www.youtube.com/embed/'+ videoId +'?autoplay=1" frameborder="0" allowfullscreen></iframe>';
                         break;
 
+                    case 'image':
+                        q = '<img src="/upload/'+ question.content+ '" width="340" >';
+                        break;
+
                     case 'text':
                         q = '<p>'+ question.content+ '</p>';
                         break;
@@ -338,6 +349,14 @@
             'showError': function(errorMessage) {
                 $quiz.actions.hideLoader();
                 $($quiz.elements.error_container).html(errorMessage).show();
+            },
+            'showControls': function() {
+                $($quiz.elements.question_no_placeholder).show();
+                $($quiz.elements.question_time_placeholder).show();
+            },
+            'hideControls': function() {
+                $($quiz.elements.question_no_placeholder).hide();
+                $($quiz.elements.question_time_placeholder).hide();
             },
             'clearCanvas': function() {
                 $($quiz.elements.question_title).text('');

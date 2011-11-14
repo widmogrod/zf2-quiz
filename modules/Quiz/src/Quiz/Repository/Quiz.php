@@ -16,13 +16,30 @@ class Quiz extends EntityRepository
     {
         $dql = 'SELECT q, a FROM Quiz\Entity\Question q JOIN q.answers a';
 
-        $q = $this->getEntityManager()->createQuery($dql);
 
+        /** @var $q  \Doctrine\ORM\QueryBuilder */
+        $q = $this->getEntityManager()->createQuery($dql);
+        $q->setMaxResults(10);
+
+        $result = array();
 
         try {
-            return $q->getArrayResult();
+            $result = $q->getArrayResult();
         } catch (\Exception $e) {
             
         }
+
+        /*
+         * DQL do not allowe me to sqlect only a.name and a.id and mantaine array structure.
+         */
+        foreach($result as &$question)
+        {
+            foreach($question['answers'] as &$answer)
+            {
+                unset($answer['isCorrect']);
+            }
+        }
+
+        return $result;
     }
 }
