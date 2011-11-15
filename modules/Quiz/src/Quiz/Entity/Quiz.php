@@ -23,6 +23,7 @@ class Quiz
 
     /**
      * @ORM\ManyToOne(targetEntity="User", cascade={"persist"}, fetch="LAZY", inversedBy="quizzes")
+     * @var \Quiz\Entity\User
      */
     protected $user;
 
@@ -34,8 +35,14 @@ class Quiz
 
     /**
      * @ORM\Column(type="datetime", nullable=false)
+     * @var \DateTime
      */
     protected $date;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    protected $isClose;
 
     public function __construct()
     {
@@ -56,6 +63,9 @@ class Quiz
         $this->user = $user;
     }
 
+    /**
+     * @return \Quiz\Entity\User
+     */
     public function getUser()
     {
         return $this->user;
@@ -72,5 +82,25 @@ class Quiz
     public function getAnswers()
     {
         return $this->answers;
+    }
+
+    public function setIsClose($isClose)
+    {
+        $this->isClose = $isClose;
+    }
+
+    public function getIsClose()
+    {
+        return $this->isClose;
+    }
+
+    public function setDate(\DateTime $date)
+    {
+        $this->date = $date;
+    }
+
+    public function getDate()
+    {
+        return $this->date;
     }
 }

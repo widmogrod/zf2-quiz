@@ -114,7 +114,8 @@ h2 {
 }
 
 #question {
-    min-height: 220px;
+    min-height: 120px;
+    font-size: 22px;
 }
 
 .answers {
@@ -166,4 +167,34 @@ a[onclick] {
     left: 50%;
     margin-left: -170px;
     margin-top: -32px;
+}
+
+.results_list {
+    display: block;
+    overflow: auto;
+}
+.results_list li
+{
+    border-bottom: 1px solid #7084a3;
+    margin-bottom: 10px;
+    position: relative;
+    line-height: 55px;
+    height: 55px;
+    clear: both;
+}
+.results_list li img {
+    float: left;
+    width: 50px;
+    margin-right: 10px;
+}
+.results_list li span.name {
+    float: left;
+    display: block;
+    height: 55px;
+    line-height: 55px;
+}
+.results_list li span.points {
+    font-weight: bold;
+    float: right;
+    width: 50px;
 }

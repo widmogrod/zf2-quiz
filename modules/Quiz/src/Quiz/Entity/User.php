@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Quiz\Repository\User")
  * @ORM\Table(name="quiz_user")
  */
 class User
@@ -27,10 +27,20 @@ class User
     protected $username;
 
     /**
+     * @ORM\Column(type="string", length=250, nullable=true)
+     */
+    protected $fullname;
+
+    /**
      * @ORM\OneToMany(targetEntity="Quiz", mappedBy="user", cascade={"persist","remove"}, orphanRemoval=true)
      * @var \Doctrine\Common\Collections\ArrayCollection
      */
     protected $quizzes;
+
+    /**
+     * @ORM\Column(type="bigint", nullable=false, unique=true)
+     */
+    protected $facebookId;
 
     public function getId()
     {
@@ -59,5 +69,25 @@ class User
     public function getQuizzes()
     {
         return $this->quizzes;
+    }
+
+    public function setFacebookId($facebookId)
+    {
+        $this->facebookId = $facebookId;
+    }
+
+    public function getFacebookId()
+    {
+        return $this->facebookId;
+    }
+
+    public function setFullname($fullname)
+    {
+        $this->fullname = $fullname;
+    }
+
+    public function getFullname()
+    {
+        return $this->fullname;
     }
 }

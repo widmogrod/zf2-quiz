@@ -1,129 +1,6 @@
-(function($){
+var $quiz;
 
-    var $data = {
-        'questions': [
-            {
-                'id': 1,
-                'title': 'JAKI ZAMEK WIDAĆ NA FILMIE?',
-                'content': 'http://www.youtube.com/watch?v=6cv9H0m0v3o',
-                'type': 'video',
-                'answers': [
-                    {
-                        'answer': 'Wawel',
-                        'id': 1
-                    },
-                    {
-                        'answer': 'Zamek w Nowym Sączu',
-                        'id': 2
-                    },
-                    {
-                        'answer': 'Zamek w Targu Nowotarskim',
-                        'id': 3
-                    }
-                ]
-            },
-            {
-                'id': 2,
-                'title': 'Co to za dzwięk?',
-                'content': 'http://www.youtube.com/watch?v=6cv9H0m0v3o',
-                'type': 'video',
-                'answers': [
-                    {
-                        'answer': 'Hejnał mariacki',
-                        'id': 1
-                    },
-                    {
-                        'answer': 'Marsz dąbrowskiego',
-                        'id': 2
-                    },
-                    {
-                        'answer': 'Mrrr mtrr',
-                        'id': 3
-                    }
-                ]
-            },
-            {
-                'id': 3,
-                'title': 'JAKI ZAMEK WIDAĆ NA FILMIE?',
-                'content': 'http://www.youtube.com/watch?v=6cv9H0m0v3o',
-                'type': 'video',
-                'answers': [
-                    {
-                        'answer': 'Wawel',
-                        'id': 1
-                    },
-                    {
-                        'answer': 'Zamek w Nowym Sączu',
-                        'id': 2
-                    },
-                    {
-                        'answer': 'Zamek w Targu Nowotarskim',
-                        'id': 3
-                    }
-                ]
-            },
-            {
-                'id': 4,
-                'title': 'Co to za dzwięk?',
-                'content': 'http://www.youtube.com/watch?v=6cv9H0m0v3o',
-                'type': 'video',
-                'answers': [
-                    {
-                        'answer': 'Hejnał mariacki',
-                        'id': 1
-                    },
-                    {
-                        'answer': 'Marsz dąbrowskiego',
-                        'id': 2
-                    },
-                    {
-                        'answer': 'Mrrr mtrr',
-                        'id': 3
-                    }
-                ]
-            },
-            {
-                'id': 5,
-                'title': 'JAKI ZAMEK WIDAĆ NA FILMIE?',
-                'content': 'http://www.youtube.com/watch?v=6cv9H0m0v3o',
-                'type': 'video',
-                'answers': [
-                    {
-                        'answer': 'Wawel',
-                        'id': 1
-                    },
-                    {
-                        'answer': 'Zamek w Nowym Sączu',
-                        'id': 2
-                    },
-                    {
-                        'answer': 'Zamek w Targu Nowotarskim',
-                        'id': 3
-                    }
-                ]
-            },
-            {
-                'id': 6,
-                'title': 'Co to za dzwięk?',
-                'content': 'http://www.youtube.com/watch?v=6cv9H0m0v3o',
-                'type': 'video',
-                'answers': [
-                    {
-                        'answer': 'Hejnał mariacki',
-                        'id': 1
-                    },
-                    {
-                        'answer': 'Marsz dąbrowskiego',
-                        'id': 2
-                    },
-                    {
-                        'answer': 'Mrrr mtrr',
-                        'id': 3
-                    }
-                ]
-            }
-        ]
-    };
+(function($){
 
     function __log()
     {
@@ -132,19 +9,56 @@
         }
     }
 
-    var $quiz = {
+    var Helper =
+    {
+        serialize: function(value, key){
+            // nie interpretuje wogule array ..?? ale dziala
+            if (null === value){
+                return '&';
+            } else
+            if (true === value) {
+                return '1&';
+            } else
+            if (false === value) {
+                return '0&';
+            } else
+            if (typeof value == 'object') {
+                var url = [];
+                $.each(value, function(i,e){
+                    var k = key === undefined ? i :  key+'['+i+']';
+                    if (typeof e == 'object') {
+                        url.push(Helper.serialize(e, k));
+                    } else {
+                        url.push(k+'=' + Helper.serialize(e, k));
+                    }
+                });
+                return url.join('&');
+            } else {
+                try {
+                    return value.toString();
+                } catch(e) {
+                    return value;
+                }
+            }
+        }
+    }
+
+    $quiz = {
         'options': {
-            'question_timeout': 8,
+            'question_timeout': 20,
             'url': {
-                'quiz_data': '/app/getquiz'
+                'quiz_data': '/app/getquiz',
+                'quiz_finish': '/app/results'
             }
         },
 
         'errors': {
-            'on_load': 'Wystąpił problem z w czasie ładowania danych. Proszę <a onclick="window.location.refresh();">odświeżyć</a> stronę ponownie.'
+            'on_load': 'Wystąpił problem z w czasie ładowania danych. Proszę <a onclick="window.location.refresh();">odświeżyć</a> stronę ponownie.',
+            'on_end': 'Wystąpił problem z w czasie ładowania danych. Proszę <a onclick="window.location.refresh();">odświeżyć</a> stronę ponownie.'
         },
 
         'elements': {
+            'results': '#question',
             'question': '#question',
             'question_no': '#question-no',
             'question_time': '#question-time',
@@ -166,6 +80,7 @@
         'questionsData': null,
         'answersCollection': {},
         'currentQuestionId': null,
+        'quizId' : null,
 
         'actions':
         {
@@ -179,9 +94,9 @@
                 $quiz.questionsData = null,
                 $quiz.answersCollection = {},
                 $quiz.currentQuestionId = null;
+                $quiz.quizId = null;
             },
             'nextQuestion':function() {
-
                 if (!$quiz.questionsData)
                 {
                     __log('nextQuestion.questionsData:', $quiz.questionsData);
@@ -212,6 +127,49 @@
                 $($quiz.elements.question_title).text('Wyniki');
 
                 $quiz.actions.showLoader();
+
+                __log('questionEnds:results' , $quiz.answersCollection);
+
+                var data = {
+                    'quizId': $quiz.quizId,
+                    'answers': $quiz.answersCollection
+                };
+
+                $.ajax({
+                    'url' : $quiz.options.url.quiz_finish,
+                    'dataType': 'json',
+                    'data': Helper.serialize(data),
+                    'type': 'POST',
+                    'timeout': 10*1000,
+                    'success': function(data) {
+
+                        __log('questionEnds:data:', data);
+                        $quiz.actions.hideLoader();
+
+                        if (!data.status) {
+                            $quiz.actions.showError(data.message);
+                            return;
+                        }
+
+                        try
+                        {
+                            $quiz.actions.renderResult(data.result);
+                        } catch (e) {
+                            __log('questionEnds:cached:', e);
+
+                            $quiz.actions.showError(
+                                $quiz.errors.on_load
+                            );
+                        }
+                    },
+                    'error': function() {
+                        __log('questionEnds:error:');
+
+                        $quiz.actions.showError(
+                            $quiz.errors.on_load
+                        );
+                    }
+                });
             },
             'loadQuestions': function() {
                 if (null === $quiz.questionsData)
@@ -224,8 +182,15 @@
                         'timeout': 10*1000,
                         'success': function(data) {
                             __log('loadQuestions:data:', data);
+                            $quiz.actions.hideLoader();
 
-                            $quiz.questionsData = data.questions;
+                            if (!data.status) {
+                                $quiz.actions.showError(data.message);
+                                return;
+                            }
+
+                            $quiz.quizId = data.result.quizId;
+                            $quiz.questionsData = data.result.questions;
 
                             try {
                                 $quiz.actions.nextQuestion();
@@ -237,6 +202,13 @@
                                     $quiz.errors.on_load
                                 );
                             }
+                        },
+                        'error': function() {
+                            __log('loadQuestions:error:');
+
+                            $quiz.actions.showError(
+                                $quiz.errors.on_load
+                            );
                         }
                     });
                 }
@@ -339,11 +311,11 @@
                     0
                 );
             },
-            'addAnswerForQuestion': function(answerId, questionId, time) {
+            'addAnswerForQuestion': function(answerId, questionId, second) {
                 $quiz.answersCollection[questionId] = {
                     'questionId': questionId,
                     'answerId': answerId,
-                    'time': time
+                    'second': second
                 };
             },
             'showError': function(errorMessage) {
@@ -363,11 +335,19 @@
                 $($quiz.elements.question_no).text('');
                 $($quiz.elements.question).html('');
                 $($quiz.elements.answers).html('');
+            },
+            'renderResult': function(result) {
+                var results = [];
+
+                results.push('<ul class="results_list">');
+                $(result).each(function(k, item) {
+                    results.push('<li><img src="https://graph.facebook.com/'+ item.username +'/picture"><span class="name"> '+ item.fullname +'</span><span class="points"> '+ item.points +'</span></li>');
+                });
+                results.push('</ul>');
+
+                $($quiz.elements.results).html(results.join("\n"));
             }
         }
     };
-
-    $quiz.actions.showLoader();
-    $quiz.actions.loadQuestions();
 
 })(jQuery);

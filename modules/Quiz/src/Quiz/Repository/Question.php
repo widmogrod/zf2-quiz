@@ -48,8 +48,18 @@ class Question extends EntityRepository
         /* @var $question \Quiz\Entity\Question */
         $question = $this->find($id);
         $question->setTitle($data['title']);
-        $question->setContent($data['content']);
         $question->setType($data['type']);
+
+        /**
+         * set content, if file is updated
+         */
+        if (!($question->getType() == $data['type']
+            && Entity\Question::TYPE_IMAGE == $data['type']
+            && empty($data['content'])))
+        {
+            $question->setContent($data['content']);
+        }
+
 
 		$answerNo = 0;
         foreach($question->getAnswers() as $answer) 

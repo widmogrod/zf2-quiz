@@ -8,6 +8,11 @@
 <!--    <iframe width="340" height="203" src="http://www.youtube.com/embed/6cv9H0m0v3o?autoplay=1" frameborder="0" allowfullscreen></iframe>-->
 </div>
 
+<div id="results">
+<!--    <ul class="results_list">-->
+<!--        <li><img src="https://graph.facebook.com/widmogrod/picture" alt="widmogrod"><span class="name">Gabriel habryn</span><span class="points">123</span></li>-->
+<!--    </ul>-->
+</div>
 
 <div id="answers">
 <!--    <ul class="answers">-->
@@ -16,3 +21,11 @@
 <!--        <li>Zamek w Targu Nowotarskim</li>-->
 <!--    </ul>-->
 </div>
+
+
+<script type="text/javascript">
+    setTimeout(function(){
+        $quiz.actions.showLoader();
+        $quiz.actions.loadQuestions();
+    }, 3000);
+</script>

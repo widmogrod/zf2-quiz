@@ -2,23 +2,20 @@
 
 namespace Quiz\Controller;
 
-use Zend\Mvc\Controller\ActionController;
-use Zend\Mvc\LocatorAware;
+use Zend\Mvc\Controller\ActionController,
+    Zend\Http\PhpEnvironment\Response,
+    Zend\Json\Json;
 
-require 'facebook/facebook.php';
-
-class IndexController extends ActionController implements LocatorAware
+class IndexController extends ActionController
 {
 
     public function indexAction()
     {
-//        $facebook = new \Facebook(array(
-//          'appId'  => '322152434467439',
-//          'secret' => 'bd125fa90026c5faba6ed397026c53f0',
-//        ));
-//
+//        /** @var $facebook \Facebook */
+//        $facebook = $this->getLocator()->get('facebook');
 //        $user = $facebook->getUser();
 //        if ($user) {
+//            var_dump($user);
 //            try {
 //                // Proceed knowing you have a logged in user who's authenticated.
 //                $user_profile = $facebook->api('/me');
@@ -33,29 +30,68 @@ class IndexController extends ActionController implements LocatorAware
 //            $logoutUrl = $facebook->getLogoutUrl();
 //        } else {
 //            $loginUrl = $facebook->getLoginUrl();
-////            $this->plugin('redirect')->toUrl($loginUrl);
+//            $this->plugin('redirect')->toUrl($loginUrl);
 //        }
 
-//        return array('loginUrl' => $loginUrl);
         return array();
     }
 
     public function startAction()
     {
+        /** @var $model \Quiz\Model\Front */
+        $model = $this->getLocator()->get('quiz-model');
+
+        if (!$model->isAuth()) {
+            $this->plugin('redirect')->toUrl($model->getLoginUrl());
+        }
+
         return array();
     }
 
     public function getquizAction()
     {
-        /** @var $em  \Doctrine\ORM\EntityManager */
-        $em = $this->getLocator()->get('doctrine')->getEntityManager();
-        /** @var $quiz \Quiz\Repository\Quiz */
-        $quiz = $em->getRepository('Quiz\Entity\Quiz');
+        /** @var $model \Quiz\Model\Front */
+        $model = $this->getLocator()->get('quiz-model');
 
-        $questions = $quiz->getQuestions();
+        if (!$model->isAuth()) {
+            $this->plugin('redirect')->toUrl($model->getLoginUrl());
+        }
 
-        $response = new \Zend\Http\PhpEnvironment\Response();
-        $response->setContent(\Zend\Json\Json::encode(array('questions' => $questions)));
+        $response = new Response();
+        $response->setContent(Json::encode($model->getRandomQuestions()));
+
+        return $response;
+    }
+
+    public function resultsAction()
+    {
+        /** @var $model \Quiz\Model\Front */
+        $model = $this->getLocator()->get('quiz-model');
+
+        if (!$model->isAuth()) {
+            $this->plugin('redirect')->toUrl($model->getLoginUrl());
+        }
+
+        /** @var $rq \Zend\Http\PhpEnvironment\Request */
+        $rq = $this->getRequest();
+
+        $result = true;
+        if ($rq->isPost())
+        {
+            $data = $this->getRequest()->post()->toArray();
+            $quizId  = (int) $data['quizId'];
+            $answers = (array) $data['answers'];
+
+            $result = $model->saveAnswersForQuiz($quizId, $answers);
+        }
+
+        if (true === $result) {
+            $result = $model->getResultsForThisWeek();
+        }
+
+        $response = new Response();
+        $response->setContent(Json::encode($result));
+
         return $response;
     }
 

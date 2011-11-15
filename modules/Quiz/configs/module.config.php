@@ -5,6 +5,8 @@ return array(
             'alias' => array(
                 'quizadmin' => 'Quiz\Controller\AdminController',
                 'quizapp' => 'Quiz\Controller\IndexController',
+                //'quiz-model' => 'Quiz\Model\Front',
+                'quiz-model' => 'Quiz\Model\Front\Mock',
             ),
 
             'Zend\View\PhpRenderer' => array(
@@ -15,6 +17,13 @@ return array(
                         ),
                     ),
                 ),
+            ),
+
+            'quiz-model' => array(
+                'parameters' => array(
+                    'facebook' => 'facebook',
+                    'doctrine' => 'doctrine'
+                )
             ),
 
             'assetic-configuration' => array(

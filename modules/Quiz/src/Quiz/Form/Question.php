@@ -59,7 +59,7 @@ class Question extends TwitterForm\Form
                 'description' => 'Proszę załączyć zdjęcie o szerokości nie mniejszej niż 340px',
                 'destination' => APPLICATION_PATH . '/public/upload',
                 'validators' => array(
-                    'IsImage',
+//                    'IsImage',
                     array(
                         'validator' => 'ImageSize',
                         'options' => array(
@@ -161,7 +161,27 @@ class Question extends TwitterForm\Form
             case QuestionEntity::TYPE_IMAGE:
             case QuestionEntity::TYPE_VIDEO:
             case QuestionEntity::TYPE_TEXT:
-                $this->getElement(sprintf('content_%s', $type))->setRequired(true);
+
+                $name = sprintf('content_%s', $type);
+
+                /*
+                 * Reseting other types of values
+                 */
+                foreach($data as $key => $value) {
+                    if ($name !== $key && false !== strpos($key, 'content_')) {
+                        $data[$key] = null;
+                    }
+                }
+
+                /**
+                 * If editable, image upload is not required
+                 */
+                $required = true;
+                if ($type == QuestionEntity::TYPE_IMAGE && $this->isPopulate) {
+                    $required = false;
+                }
+
+                $this->getElement($name)->setRequired($required);
                 break;
         }
 
@@ -178,6 +198,7 @@ class Question extends TwitterForm\Form
         return $result;
     }
 
+    protected $isPopulate = false;
 
     public function populate(array $values)
     {
@@ -186,11 +207,12 @@ class Question extends TwitterForm\Form
             unset($values['correct']);
         }
 
-        if (empty($values['content']))
-        {
-            $type = $values['type'];
-            $values['content'] = $values[sprintf('content_%s', $type)];
+        $type = $values['type'];
+        if (empty($values[sprintf('content_%s', $type)])) {
+            $values[sprintf('content_%s', $type)] = $values['content'];
         }
+
+        $this->isPopulate = true;
 
         return parent::populate($values);
     }
