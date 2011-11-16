@@ -1,4 +1,4 @@
-*.css
-*.js
-*.png
+*
+!.htaccess
+!index.php
 !.gitignore

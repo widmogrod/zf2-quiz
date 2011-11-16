@@ -3,19 +3,17 @@ return array(
     'module_paths' => array(
         realpath(__DIR__ . '/../modules'),
     ),
-    'modules' => array(
 
-//        'ZendDeveloperTools',
+    'modules' => array(
+        'FacebookBundle',
         'DataGridBundle',
         'TwitterBootstrap',
         'AsseticBundle',
-
         'SpiffyDoctrine',
-
         'Quiz',
-
         'Application',
     ),
+
     'module_manager_options' => array(
         'enable_config_cache'      => false,
         'cache_dir'                => realpath(__DIR__ . '/../data/cache'),

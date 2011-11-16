@@ -58,6 +58,7 @@ var $quiz;
         },
 
         'elements': {
+            'start_again_info_block' : '#start_again',
             'results': '#question',
             'question': '#question',
             'question_no': '#question-no',
@@ -154,6 +155,7 @@ var $quiz;
                         try
                         {
                             $quiz.actions.renderResult(data.result);
+                            $($quiz.elements.start_again_info_block).show();
                         } catch (e) {
                             __log('questionEnds:cached:', e);
 

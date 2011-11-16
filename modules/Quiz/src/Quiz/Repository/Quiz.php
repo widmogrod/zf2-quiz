@@ -183,7 +183,36 @@ class Quiz extends EntityRepository
         try {
             $result = $q->getArrayResult();
         } catch (\Exception $e) {
+            # todo log
+            return false;
+        }
 
+        return $result;
+    }
+
+    public function canPlayAgain(User $user)
+    {
+        $startDate = date('Y-m-d', mktime(0,0,0, date('m'), date('d') -1, date('Y')));
+        $endDate = date('Y-m-d', mktime(0,0,0, date('m'), date('d') + 1, date('Y')));
+
+        $dql = 'SELECT COUNT(1) FROM Quiz\Entity\Quiz q WHERE q.user = :userId AND q.date BETWEEN :startDate AND :endDate AND q.isClose = true';
+
+
+        /** @var $q  \Doctrine\ORM\Query */
+        $q = $this->getEntityManager()->createQuery($dql);
+        $q->setMaxResults(1);
+        $q->setParameter('userId', $user->getId());
+        $q->setParameter('startDate', $startDate);
+        $q->setParameter('endDate', $endDate);
+
+        $result = true;
+
+        try {
+            $result = $q->getSingleScalarResult();
+            $result = ($result > 0) ? false : true;
+        } catch (\Exception $e) {
+            # todo log
+            return false;
         }
 
         return $result;

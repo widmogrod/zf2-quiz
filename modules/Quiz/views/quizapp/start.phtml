@@ -22,10 +22,58 @@
 <!--    </ul>-->
 </div>
 
+<div id="start_again">
+    <p>Jeśli chcesz poprawić swój wynik <a onclick="sendRequestViaMultiFriendSelector();">zaproś trójkę znajomych</a> i weź udział w quizie ponownie</p>
+    <a class="btn-start-again" href="<?php echo $this->url('app', array('action' => 'start'))?>"></a>
+</div>
+
 
 <script type="text/javascript">
+    <?php if (false !== $this->canPlay): ?>
     setTimeout(function(){
         $quiz.actions.showLoader();
         $quiz.actions.loadQuestions();
-    }, 3000);
+    }, 1500);
+    <?php else: ?>
+    setTimeout(function(){
+        $('#start_again').show();
+        $('#question').hide();
+    }, 1500);
+
+    <?php endif;?>
+
+    window.fbAsyncInit = function() {
+        FB.init({
+            appId: '322152434467439',
+            cookie: true,
+            xfbml: true,
+            oauth: true
+        });
+        FB.Event.subscribe('auth.login', function(response) {
+            window.location.reload();
+        });
+        FB.Event.subscribe('auth.logout', function(response) {
+            window.location.reload();
+        });
+
+        consolelog('FB ready');
+    };
+
+    function requestCallB() {
+        console.log(arguments);
+    }
+
+    function sendRequestViaMultiFriendSelector() {
+        FB.ui({method: 'apprequests',
+            message: 'My Great Request'
+        }, requestCallB);
+    }
+
+    (function() {
+        var e = document.createElement('script');
+        e.async = true;
+        e.src = document.location.protocol +
+                '//connect.facebook.net/en_US/all.js';
+        document.getElementById('fb-root').appendChild(e);
+    }());
 </script>

@@ -45,7 +45,7 @@ class IndexController extends ActionController
             $this->plugin('redirect')->toUrl($model->getLoginUrl());
         }
 
-        return array();
+//        return array('canPlay' => $model->canPlayAgain());
     }
 
     public function getquizAction()

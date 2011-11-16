@@ -43,6 +43,15 @@ h2 {
     text-indent: -200em;
     /*margin: 0 auto;*/
 }
+.btn-start-again {
+    background: transparent url("../images/btn-start-again.png") 0 0 no-repeat;
+    height: 37px;
+    width: 340px;
+    display: block;
+    overflow: hidden;
+    text-indent: -200em;
+    /*margin: 0 auto;*/
+}
 
 #container {
     width: 520px;
@@ -197,4 +206,12 @@ a[onclick] {
     font-weight: bold;
     float: right;
     width: 50px;
+}
+
+
+#start_again {
+    display: none;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 2px solid #7084a3;
 }

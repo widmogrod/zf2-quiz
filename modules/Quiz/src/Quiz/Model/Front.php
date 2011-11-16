@@ -131,5 +131,12 @@ class Front
 
         return true;
     }
+
+    public function canPlayAgain()
+    {
+        /** @var $quiz \Quiz\Repository\Quiz */
+        $quiz = $this->entityManager->getRepository('Quiz\Entity\Quiz');
+        return $quiz->canPlayAgain($this->getUserEntity());
+    }
 }
  

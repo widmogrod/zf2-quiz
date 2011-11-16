@@ -15,26 +15,14 @@ return array(
                 'view'  => 'Zend\View\PhpRenderer',
             ),
 
-//            'doctrine' => array(
-//                'parameters' => array(
-//                    'conn' => array(
-//                        'driver'   => 'pdo_pgsql',
-//                        'host'     => 'localhost',
-//                        'port'     => '5432',
-//                        'user'     => 'youruse',
-//                        'password' => 'yourpassword',
-//                        'dbname'   => 'yourdbname',
-//                    ),
-//                ),
-//            ),
-
-//            'Zend\View\HelperLoader' => array(
-//                'parameters' => array(
-//                    'map' => array(
-//                        'url' => 'Application\View\Helper\Url',
-//                    ),
-//                ),
-//            ),
+            'assetic-configuration' => array(
+                'parameters' => array(
+                    'config' => array(
+                        'cacheEnabled' => true,
+                        'cachePath' => __DIR__ . '/../../../data/cache',
+                    )
+                )
+            ),
 
             'Zend\View\HelperBroker' => array(
                 'parameters' => array(

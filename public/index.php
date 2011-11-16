@@ -34,6 +34,7 @@ $moduleManager = new Zend\Module\AutoDependencyManager(
     new Zend\Module\ManagerOptions($appConfig['module_manager_options'])
 );
 
+
 // Create application, bootstrap, and run
 $bootstrap      = new Zend\Mvc\Bootstrap($moduleManager);
 $application    = new Zend\Mvc\Application;
@@ -62,4 +63,7 @@ try
     \Zend\Debug::dump($e->getFile());
     \Zend\Debug::dump($e->getLine());
 }
+
+//echo '<pre>';
+//print_r($moduleManager->getMergedConfig()->toArray());
 

@@ -29,6 +29,9 @@ return array(
             'assetic-configuration' => array(
                 'parameters' => array(
                     'config' => array(
+
+                        'cacheEnabled' => true,
+
                         'controllers' => array(
                             'quizapp' => array(
                                 '@quiz_app_css',
