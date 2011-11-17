@@ -1,14 +1,12 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /
+#    RewriteBase /zf2-quiz/public
+#    RewriteBase /programista/quiz/public
 </IfModule>
 
 <IfModule mod_rewrite.c>
-	RewriteRule ^(.*)/$ /$1 [R=301,L]
-</IfModule>
 
-
-<IfModule mod_rewrite.c>
 	RewriteCond %{REQUEST_FILENAME} !-f
 	RewriteCond %{REQUEST_FILENAME} !-d
 	RewriteRule !\.(j|js|ico|gif|jpg|png|css)$ index.php [NC,L]

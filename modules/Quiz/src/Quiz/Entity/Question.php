@@ -118,4 +118,20 @@ class Question
     {
         return self::$availableTypes;
     }
+
+    public function toArray()
+    {
+        $answers = array();
+        foreach($this->getAnswers() as $answer) {
+            $answers[] = $answer->toArray();
+        }
+
+        return array(
+            'id' => $this->id,
+            'content' => $this->content,
+            'type' => $this->type,
+            'title' => $this->title,
+            'answers' => $answers
+        );
+    }
 }

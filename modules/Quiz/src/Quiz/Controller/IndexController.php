@@ -33,7 +33,13 @@ class IndexController extends ActionController
 //            $this->plugin('redirect')->toUrl($loginUrl);
 //        }
 
-        return array();
+        /** @var $model \Quiz\Model\Front */
+        $model = $this->getLocator()->get('quiz-model');
+//        var_dump($model->canPlayAgain());
+        return array(
+            'isAuth' => $model->isAuth(),
+            'canPlay' => $model->canPlayAgain()
+        );
     }
 
     public function startAction()
@@ -45,7 +51,7 @@ class IndexController extends ActionController
             $this->plugin('redirect')->toUrl($model->getLoginUrl());
         }
 
-//        return array('canPlay' => $model->canPlayAgain());
+        return array('canPlay' => $model->canPlayAgain());
     }
 
     public function getquizAction()
@@ -92,6 +98,29 @@ class IndexController extends ActionController
         $response = new Response();
         $response->setContent(Json::encode($result));
 
+        return $response;
+    }
+
+    public function userinviteAction()
+    {
+        /** @var $model \Quiz\Model\Front */
+        $model = $this->getLocator()->get('quiz-model');
+
+        /** @var $rq \Zend\Http\PhpEnvironment\Request */
+        $rq = $this->getRequest();
+
+        $result = array(
+            'status' => false,
+            'message' => 'Przepraszamy, wystąpił błąd po stronie serwera. Proszę odśwież stronę.',
+            'result' => array()
+        );
+
+        if ($rq->isPost()) {
+            $result = $model->userInviteFrients();
+        }
+
+        $response = new Response();
+        $response->setContent(Json::encode($result));
         return $response;
     }
 

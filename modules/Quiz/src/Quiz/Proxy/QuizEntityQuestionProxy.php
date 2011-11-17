@@ -90,6 +90,12 @@ class QuizEntityQuestionProxy extends \Quiz\Entity\Question implements \Doctrine
         return parent::getAnswers();
     }
 
+    public function toArray()
+    {
+        $this->__load();
+        return parent::toArray();
+    }
+
 
     public function __sleep()
     {

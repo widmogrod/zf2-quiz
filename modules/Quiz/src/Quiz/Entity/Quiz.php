@@ -23,9 +23,16 @@ class Quiz
 
     /**
      * @ORM\ManyToOne(targetEntity="User", cascade={"persist"}, fetch="LAZY", inversedBy="quizzes")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      * @var \Quiz\Entity\User
      */
     protected $user;
+
+    /**
+     * @ORM\Column(type="integer", nullable=false)
+     * @var
+     */
+    protected $user_id;
 
     /**
      * @ORM\OneToMany(targetEntity="QuizAnswer", mappedBy="quiz", cascade={"persist"}, orphanRemoval=true)
@@ -102,5 +109,25 @@ class Quiz
     public function getDate()
     {
         return $this->date;
+    }
+
+    /*
+     * Methods for FKs
+     */
+
+    /**
+     * @param  $user_id
+     */
+    public function setUserId($user_id)
+    {
+        $this->user_id = $user_id;
+    }
+
+    /**
+     * @return
+     */
+    public function getUserId()
+    {
+        return $this->user_id;
     }
 }

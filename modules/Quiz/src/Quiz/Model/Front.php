@@ -37,10 +37,10 @@ class Front
             $user = $this->entityManager->getRepository('Quiz\Entity\User');
             return $user->createFacebookUser($this->getFacebookUserId(), $this->getFacebookData());
         } catch (\Exception $e) {
-            \Zend\Debug::dump($e->getMessage());
-            \Zend\Debug::dump($e->getFile());
-            \Zend\Debug::dump($e->getLine());
-            \Zend\Debug::dump($e->getTrace());
+//            \Zend\Debug::dump($e->getMessage());
+//            \Zend\Debug::dump($e->getFile());
+//            \Zend\Debug::dump($e->getLine());
+//            \Zend\Debug::dump($e->getTrace());
         }
 
         return false;
@@ -48,6 +48,12 @@ class Front
 
     public function isAuth()
     {
+        if (isset($_GET['debug']))
+        {
+            var_dump($this->facebook->getSignedRequest());
+            var_dump($this->facebook->getAccessToken());
+            var_dump($this->facebook->getUser());
+        }
         return $this->facebook->getUser() > 0;
     }
 
@@ -57,10 +63,11 @@ class Front
         try {
             $result = $this->facebook->api('/me');
         } catch(\Exception $e) {
-            \Zend\Debug::dump($e->getMessage());
-            \Zend\Debug::dump($e->getFile());
-            \Zend\Debug::dump($e->getLine());
-            \Zend\Debug::dump($e->getTrace());
+//            throw $e;
+//            \Zend\Debug::dump($e->getMessage());
+//            \Zend\Debug::dump($e->getFile());
+//            \Zend\Debug::dump($e->getLine());
+//            \Zend\Debug::dump($e->getTrace());
         }
 
         return $result;
@@ -76,18 +83,28 @@ class Front
         return $this->facebook->getLoginUrl();
     }
 
+    public function getUserId()
+    {
+        return $this->getUserEntity()->getId();
+    }
+
     public function getRandomQuestions()
     {
-        /** @var $quiz \Quiz\Repository\Quiz */
-        $quiz = $this->entityManager->getRepository('Quiz\Entity\Quiz');
-
-        $questions = $quiz->getQuestions($this->getUserEntity());
-
         $result = array(
-            'status' => true,
-            'message' => null,
-            'result' => $questions
+            'status' => false,
+            'message' => 'Dziękujemy za rozgrywkę, zapraszamy ponownie jutro!',
+            'result' => array()
         );
+
+        if ($this->canPlayAgain())
+        {
+            /** @var $quiz \Quiz\Repository\Quiz */
+            $quiz = $this->entityManager->getRepository('Quiz\Entity\Quiz');
+            $questions = $quiz->getQuestions($this->getUserEntity());
+
+            $result['status'] = true;
+            $result['result'] = $questions;
+        }
 
         return $result;
     }
@@ -134,9 +151,45 @@ class Front
 
     public function canPlayAgain()
     {
+        if (!$this->isAuth()) {
+            return false;
+        }
+
         /** @var $quiz \Quiz\Repository\Quiz */
         $quiz = $this->entityManager->getRepository('Quiz\Entity\Quiz');
         return $quiz->canPlayAgain($this->getUserEntity());
+    }
+
+    public function userInviteFrients()
+    {
+        $result = array(
+            'status' => false,
+            'message' => null,
+            'result' => array()
+        );
+
+        if (!$this->isAuth()) {
+            $result['status'] = false;
+            $result['message'] = 'Czy zalogowałeś się na Facebook\'a?';
+            return $result;
+        }
+
+//        /** @var $user \Quiz\Repository\User */
+//        $user = $this->entityManager->getRepository('Quiz\Entity\User');
+
+//        var_dump($this->getUserId());
+        $f = new \Quiz\Entity\FriendsInvite();
+        $f->setUserId($this->getUserId());
+
+        try {
+            $this->entityManager->persist($f);
+            $this->entityManager->flush();
+            $result['status'] = (bool) $result;
+        } catch(\Exception $e) {
+            \Zend\Debug::dump($e->getMessage());
+        }
+
+        return $result;
     }
 }
  

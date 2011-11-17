@@ -7,7 +7,7 @@ ini_set('display_errors', true);
 
 // Define application environment
 defined('APPLICATION_ENV')
-    || define('APPLICATION_ENV', (isset($env[$host]) ? $env[$host] : 'production'));
+    || define('APPLICATION_ENV', (isset($env['hostname'][$host]) ? $env['hostname'][$host] : 'production'));
 
 defined('APPLICATION_PATH')
     || define('APPLICATION_PATH', realpath(__DIR__ . '/..'));
@@ -34,18 +34,30 @@ $moduleManager = new Zend\Module\AutoDependencyManager(
     new Zend\Module\ManagerOptions($appConfig['module_manager_options'])
 );
 
-
 // Create application, bootstrap, and run
 $bootstrap      = new Zend\Mvc\Bootstrap($moduleManager);
 $application    = new Zend\Mvc\Application;
 $bootstrap->bootstrap($application);
 
-/* @var $r \Zend\Mvc\Router\SimpleRouteStack */
-//$r = $application->getRouter();
-//
-///* @var $rq \Zend\Http\PhpEnvironment\Request */
-//$rq = $application->getRequest();
-//if ($rq->server()->get('SERVER_NAME') == 'tomatoe.pl')
+//echo '<pre>';
+//print_r($_SERVER);
+
+if (isset($env['baseUri'][APPLICATION_ENV])) {
+//    define('BASE_URI', (isset($_SERVER['HTTPS']) ? 'https' : 'http'). '//'. $_SERVER['HTTP_HOST'] . '/' .ltrim($env['baseUri'][APPLICATION_ENV], '/'));
+    define('BASE_URI', $env['baseUri'][APPLICATION_ENV]);
+    /* @var $r \Zend\Mvc\Router\SimpleRouteStack */
+    $r = $application->getRouter();
+    $r->setBaseUrl($env['baseUri'][APPLICATION_ENV]);
+
+    /* @var $rq \Zend\Http\PhpEnvironment\Request */
+    $rq = $application->getRequest();
+    $r->match($rq);
+    $r->getRequestUri();
+} else {
+    define('BASE_URI', '/');
+}
+
+//if (APPLICATION_ENV == 'production')
 //{
 //    $uri = $rq->uri();
 //    $path = $uri->getPath();

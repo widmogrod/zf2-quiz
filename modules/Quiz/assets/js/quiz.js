@@ -1,16 +1,19 @@
 var $quiz;
+var Helper;
 
-(function($){
-
-    function __log()
-    {
-        if (console && console.log) {
+function __log() {
+    if (console && console.log) {
+        if ($.browser.ie) {
+            console.log(arguments);
+        } else {
             console.log.apply(console, arguments);
         }
     }
+}
 
-    var Helper =
-    {
+(function($){
+
+    Helper = {
         serialize: function(value, key){
             // nie interpretuje wogule array ..?? ale dziala
             if (null === value){
@@ -47,19 +50,32 @@ var $quiz;
         'options': {
             'question_timeout': 20,
             'url': {
-                'quiz_data': '/app/getquiz',
-                'quiz_finish': '/app/results'
+                'quiz_data': 'app/getquiz',
+                'quiz_finish': 'app/results',
+                'quiz_results': 'app/results',
+                'user_invite': 'app/userinvite'
             }
         },
 
         'errors': {
             'on_load': 'Wystąpił problem z w czasie ładowania danych. Proszę <a onclick="window.location.refresh();">odświeżyć</a> stronę ponownie.',
-            'on_end': 'Wystąpił problem z w czasie ładowania danych. Proszę <a onclick="window.location.refresh();">odświeżyć</a> stronę ponownie.'
+            'on_end': 'Wystąpił problem z w czasie ładowania danych. Proszę <a onclick="window.location.refresh();">odświeżyć</a> stronę ponownie.',
+            'firnds_invite_rq': 'Niestety do ponownej rozgrywki, zabrakło tylko paru znajomych, a dokładniej ',
         },
 
         'elements': {
-            'start_again_info_block' : '#start_again',
-            'results': '#question',
+
+            'message_hello' : '#hello-message',
+            'message_begin' : '#begin-message',
+            'message_invite': '#invite-message',
+
+            'play_box': '#play-box',
+            'fb_like': '#fb_like_button',
+
+            // to refactore
+            'start_again_info_block' : '#invite-message',
+
+            'results': '#results',
             'question': '#question',
             'question_no': '#question-no',
             'question_time': '#question-time',
@@ -82,11 +98,13 @@ var $quiz;
         'answersCollection': {},
         'currentQuestionId': null,
         'quizId' : null,
+        'auto_start' : false,
+        'inviteFriends': 3,
 
         'actions':
         {
             'clearAll': function(){
-                $quiz.action.stopTimer();
+                $quiz.actions.stopTimer();
 
                 $quiz.question_no = 0,
                 $quiz.timer = 0,
@@ -96,6 +114,9 @@ var $quiz;
                 $quiz.answersCollection = {},
                 $quiz.currentQuestionId = null;
                 $quiz.quizId = null;
+                $quiz.auto_start = false;
+                $quiz.inviteFriends = 3;
+
             },
             'nextQuestion':function() {
                 if (!$quiz.questionsData)
@@ -121,11 +142,14 @@ var $quiz;
                 }
             },
             'questionEnds': function(){
+
+
+                $quiz.auto_start = false;
                 $quiz.actions.stopTimer();
                 $quiz.actions.clearCanvas();
                 $quiz.actions.hideControls();
 
-                $($quiz.elements.question_title).text('Wyniki');
+                // $($quiz.elements.question_title).text('Wyniki');
 
                 $quiz.actions.showLoader();
 
@@ -141,7 +165,7 @@ var $quiz;
                     'dataType': 'json',
                     'data': Helper.serialize(data),
                     'type': 'POST',
-                    'timeout': 10*1000,
+                    //'timeout': 10*1000,
                     'success': function(data) {
 
                         __log('questionEnds:data:', data);
@@ -155,7 +179,8 @@ var $quiz;
                         try
                         {
                             $quiz.actions.renderResult(data.result);
-                            $($quiz.elements.start_again_info_block).show();
+                            $quiz.actions.showInviteMessage();
+//                            $($quiz.elements.start_again_info_block).show();
                         } catch (e) {
                             __log('questionEnds:cached:', e);
 
@@ -174,6 +199,9 @@ var $quiz;
                 });
             },
             'loadQuestions': function() {
+
+                $quiz.actions.showPlayBox();
+                
                 if (null === $quiz.questionsData)
                 {
                     $quiz.actions.showLoader();
@@ -181,7 +209,7 @@ var $quiz;
                     $.ajax({
                         'url' : $quiz.options.url.quiz_data,
                         'dataType': 'json',
-                        'timeout': 10*1000,
+                        //'timeout': 10*1000,
                         'success': function(data) {
                             __log('loadQuestions:data:', data);
                             $quiz.actions.hideLoader();
@@ -281,7 +309,7 @@ var $quiz;
 
                 answers.push('<ul class="answers">');
                 $(question.answers).each(function(k, item) {
-                    answers.push('<li answerId="'+ item.id +'">'+ item.name +'</li>');
+                    answers.push('<li answerId="'+ item.id +'"><span></span>'+ item.name +'</li>');
                 });
                 answers.push('</ul>');
 
@@ -338,6 +366,45 @@ var $quiz;
                 $($quiz.elements.question).html('');
                 $($quiz.elements.answers).html('');
             },
+            'showResults': function() {
+
+                $quiz.actions.showLoader();
+                $.ajax({
+                    'url' : $quiz.options.url.quiz_results,
+                    'dataType': 'json',
+                    'type': 'GET',
+                    'success': function(data) {
+
+                        __log('showResults:data:', data);
+                        $quiz.actions.hideLoader();
+
+                        if (!data.status) {
+                            $quiz.actions.showError(data.message);
+                            return;
+                        }
+
+                        try
+                        {
+                            $quiz.actions.renderResult(data.result);
+                            $quiz.actions.showInviteMessage(true);
+                        } catch (e) {
+                            __log('showResults:cached:', e);
+
+                            $quiz.actions.showError(
+                                $quiz.errors.on_load
+                            );
+                        }
+                    },
+                    'error': function() {
+
+                        __log('showResults:error:');
+
+                        $quiz.actions.showError(
+                            $quiz.errors.on_load
+                        );
+                    }
+                });
+            },
             'renderResult': function(result) {
                 var results = [];
 
@@ -348,8 +415,224 @@ var $quiz;
                 results.push('</ul>');
 
                 $($quiz.elements.results).html(results.join("\n"));
+            },
+
+            'showHelloMessage': function () {
+
+                if ($quiz.auto_start) {
+                    return;
+                }
+
+                $quiz.actions.hideLoader();
+                $($quiz.elements.fb_like).show();
+                $($quiz.elements.play_box).hide();
+                $($quiz.elements.message_hello).show();
+                $($quiz.elements.message_begin).hide();
+                $($quiz.elements.message_invite).hide();
+            },
+
+            'showBeginMessage': function () {
+
+                if ($quiz.auto_start) {
+                    return;
+                }
+
+                $quiz.actions.hideLoader();
+                $($quiz.elements.fb_like).hide();
+                $($quiz.elements.play_box).hide();
+                $($quiz.elements.message_hello).hide();
+                $($quiz.elements.message_begin).show();
+                $($quiz.elements.message_invite).hide();
+            },
+
+            'showInviteMessage': function (forse) {
+                if (true !== forse && $quiz.auto_start) {
+                    return;
+                }
+
+                $quiz.actions.hideLoader();
+                $($quiz.elements.fb_like).hide();
+                $($quiz.elements.play_box).hide();
+                $($quiz.elements.message_hello).hide();
+                $($quiz.elements.message_begin).hide();
+                $($quiz.elements.message_invite).show();
+            },
+            'showPlayBox': function() {
+                $quiz.actions.hideLoader();
+                $($quiz.elements.fb_like).hide();
+                $($quiz.elements.play_box).show();
+                $($quiz.elements.message_hello).hide();
+                $($quiz.elements.message_begin).hide();
+                $($quiz.elements.message_invite).hide();
+            },
+            'isValidFBFriendRequest': function(frinedInvite) {
+                __log('isValidFBFriendRequest:1', arguments);
+                if (frinedInvite)
+                {
+                    __log('isValidFBFriendRequest:2', arguments);
+                    if (frinedInvite.to < $quiz.inviteFriends)
+                    {
+                        __log('isValidFBFriendRequest:3', arguments);
+                        $quiz.actions.showError(
+                            $quiz.errors.firnds_invite_rq . $quiz.inviteFriends
+                        );
+
+                        $quiz.inviteFriends -= frinedInvite.to;
+                    } else {
+                        __log('isValidFBFriendRequest:5', arguments);
+                        $quiz.actions.validFriendRequest();
+                        $quiz.inviteFriends = 3;
+                    }
+                }
+            },
+            'validFriendRequest': function() {
+                $quiz.auto_start = false;
+                __log('validFriendRequest', arguments);
+                $quiz.actions.clearAll();
+                $quiz.actions.showLoader();
+
+                $.ajax({
+                    'url' : $quiz.options.url.user_invite,
+                    'dataType': 'json',
+                    'type': 'POST',
+                    'success': function(data) {
+
+                        __log('validFriendRequest:data:', data);
+                        $quiz.actions.hideLoader();
+
+                        if (!data.status) {
+//                            $quiz.actions.showError(data.message);
+                            $quiz.actions.showInviteMessage(true);
+                            return;
+                        }
+
+                        try
+                        {
+                            $quiz.actions.loadQuestions();
+                        } catch (e) {
+                            __log('validFriendRequest:cached:', e);
+
+                            $quiz.actions.showError(
+                                $quiz.errors.on_load
+                            );
+                        }
+                    },
+                    'error': function() {
+
+                        __log('validFriendRequest:error:');
+
+                        $quiz.actions.showError(
+                            $quiz.errors.on_load
+                        );
+                    }
+                });
             }
         }
     };
 
+    $quiz.actions.showLoader();
+
 })(jQuery);
+
+
+window.fbAsyncInit = function() {
+
+    __log('fb.init');
+
+    FB.init({
+        appId: FB_APP_ID,
+        cookie: true,
+        xfbml: true,
+        oauth: true
+    });
+
+    FB.Event.subscribe('auth.login', function(response) {
+        __log('auth.login', this, arguments);
+    });
+    FB.Event.subscribe('auth.logout', function(response) {
+        __log('auth.logout', this, arguments);
+    });
+    FB.Event.subscribe('edge.create', function(response) {
+        __log('edge.create', this, arguments);
+        // już lubisz, startuj!
+        $quiz.actions.showBeginMessage();
+    });
+
+    FB.getLoginStatus(function(response) {
+
+        __log('likes:getLoginStatus', arguments);
+
+        if (response.authResponse) {
+
+            FB.api('/'+response.authResponse.userID+'/likes/193527090658231', function(response){
+
+                __log('likes', arguments);
+
+                if (response && response.data.length) {
+                    __log('likes:length', arguments);
+                    // lubi aplikację
+                    $quiz.actions.showBeginMessage();
+                }
+                else
+                {
+                    __log('likes:length=0', arguments);
+                    $quiz.actions.showHelloMessage();
+                    // po 7sek pozwól grać!
+                    setTimeout($quiz.actions.showBeginMessage, 7000);
+//                    __log('likes:length=0:', arguments);
+//                    // jeszcze nie lubi
+//                    $quiz.actions.showHelloMessage();
+                }
+
+
+                
+            });
+
+        } else {
+            // no user session available, someone you dont know
+            // niech polubi! - nie może byc blokady przez lika!
+            // $quiz.actions.showHelloMessage();
+//            $quiz.actions.showBeginMessage();
+
+            // po 7sek pozwól grać!
+            setTimeout($quiz.actions.showBeginMessage, 7000);
+
+//            FB.login(function(response) {
+//                if (response.authResponse) {
+//
+//                    FB.api('/'+response.authResponse.userID+'/likes/'+ FB_APP_ID, function(response){
+//
+//                        if (response.data.length) {
+//                            __log('likes:length', arguments);
+//                            // lubi aplikację
+//                            $quiz.actions.showBeginMessage();
+//                        } else {
+//                            __log('likes:length=0:', arguments);
+//                            // jeszcze nie lubi
+//                            $quiz.actions.showHelloMessage();
+//                        }
+//
+//                    });
+//
+//                } else {
+//                    $quiz.actions.showHelloMessage();
+//                }
+//            }/*, {scope: 'email'}*/);
+        }
+    });
+};
+
+
+function sendRequestViaMultiFriendSelector() {
+    FB.ui({method: 'apprequests',
+        message: 'Wspaniały pomysł! quiz o małopolsce!'
+    }, $quiz.actions.isValidFBFriendRequest);
+}
+
+(function() {
+    var e = document.createElement('script');
+    e.async = true;
+    e.src = document.location.protocol +
+            '//connect.facebook.net/en_US/all.js';
+    document.getElementById('fb-root').appendChild(e);
+}());

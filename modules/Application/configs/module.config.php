@@ -71,8 +71,8 @@ return array(
             'options' => array(
                 'route'    => '/',
                 'defaults' => array(
-                    'controller' => 'quizadmin',
-                    'action'     => 'quizlist',
+                    'controller' => 'quizapp',
+                    'action'     => 'index',
                 ),
             ),
         ),

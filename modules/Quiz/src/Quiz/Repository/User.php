@@ -15,14 +15,15 @@ class User extends EntityRepository
     public function createFacebookUser($facebookId, array $data)
     {
         $user = $this->findOneBy(array('facebookId' => $facebookId));
-        if (!$user)
-        {
+        if (!$user) {
             $user = new \Quiz\Entity\User();
             $user->setFacebookId($facebookId);
         }
 
         // sprintf('https://graph.facebook.com/%s/picture', $data['username'])
-        $user->setUsername($data['username']);
+        if (isset($data['username'])) {
+            $user->setUsername($data['username']);
+        }
 
         if (isset($data['first_name']) && isset($data['last_name'])) {
             $user->setFullname(sprintf('%s %s', $data['first_name'] , $data['last_name']));
@@ -63,6 +64,31 @@ class User extends EntityRepository
         $q->setMaxResults(10);
 
         $result = array();
+
+        try {
+            $result = $q->getArrayResult();
+        } catch (\Exception $e) {
+
+        }
+
+        return $result;
+    }
+
+    public function inviteTodayFriends($userId)
+    {
+        $startDate = date('Y-m-d', mktime(0,0, 0, date('m'), date('d'), date('Y'))); // from 00:00:00 today
+        $endDate = date('Y-m-d', mktime(0,0,-1, date('m'), date('d')+1, date('Y'))); // to 23:59:59 today
+
+        $dql = 'SELECT COUNT(1) FROM Quiz\Entity\FriendsInvite u WHERE u.userId = :userId u.date BETWEEN :startDate AND :endDate';
+
+
+        /** @var $q  \Doctrine\ORM\QueryBuilder */
+        $q = $this->getEntityManager()->createQuery($dql);
+        $q->setParameter('userId', $userId);
+        $q->setParameter('startDate', $startDate);
+        $q->setParameter('endDate', $endDate);
+
+        $result = false;
 
         try {
             $result = $q->getArrayResult();

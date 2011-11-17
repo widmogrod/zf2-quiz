@@ -22,9 +22,15 @@ class Answer
 
     /**
      * @ORM\ManyToOne(targetEntity="Question", cascade={"persist"}, fetch="LAZY", inversedBy="answers")
+     * @ORM\JoinColumn(name="question_id", referencedColumnName="id")
      * @var Question
      */
     protected $question;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    protected $question_id;
 
     /**
      * @ORM\Column(type="string", length=100, nullable=false)
@@ -72,5 +78,28 @@ class Answer
     public function getName()
     {
         return $this->name;
+    }
+
+    public function toArray()
+    {
+        return array(
+            'id' => $this->id,
+            'name' => $this->name,
+            'isCorrect' => $this->isCorrect,
+        );
+    }
+
+    /*
+     * Methods for FKs
+     */
+
+    public function setQuestionId($question_id)
+    {
+        $this->question_id = $question_id;
+    }
+
+    public function getQuestionId()
+    {
+        return $this->question_id;
     }
 }

@@ -15,41 +15,78 @@ class Quiz extends EntityRepository
 {
     public function getQuestions(User $user)
     {
+        $userId = $user->getId();
+
         $em = $this->getEntityManager();
 
-        $dql = 'SELECT q, a FROM Quiz\Entity\Question q JOIN q.answers a';
+        $sub = 'SELECT a.question_id FROM Quiz\Entity\QuizAnswer qa JOIN qa.answer a JOIN qa.quiz z WHERE z.user_id = :userId';
+        $dql = 'SELECT q FROM Quiz\Entity\Question q WHERE q.id NOT IN (%s)';
+        $dql = sprintf($dql, $sub);
 
-        /** @var $q  \Doctrine\ORM\QueryBuilder */
+        /** @var $q  \Doctrine\ORM\Query */
         $q = $em->createQuery($dql);
-        $q->setMaxResults(10*3);
+        $q->setParameter('userId', $userId, \Doctrine\DBAL\Types\Type::INTEGER);
+        $q->setMaxResults(10);
+
 
         $result = array();
 
+//        echo $q->getSQL();
+//        echo $q->getDQL();
+//        \Zend\Debug::dump($q->getArrayResult());
+//        die;
         try {
-            $result = $q->getArrayResult();
+            $result = $q->getResult();
         } catch (\Exception $e) {
-            
+//            var_dump($e->getMessage());
         }
 
-        $maxQuestion = 10;
+        $r = array();
+        $questionIDs = array();
 
         /*
          * DQL do not allowe me to sqlect only a.name and a.id and mantaine array structure.
          */
-        foreach($result as &$question)
+        foreach($result as $question)
         {
-            foreach($question['answers'] as &$answer)
-            {
-                unset($answer['isCorrect']);
+            $questionIDs[] = $question->getId();
+            $r[] = $question->toArray();
+        }
+
+//        var_dump($r);
+
+        // select missing
+        if (count($questionIDs) < 10)
+        {
+            if (empty($questionIDs)) {
+                $dql = 'SELECT q FROM Quiz\Entity\Question q';
+            } else {
+                $dql = 'SELECT q FROM Quiz\Entity\Question q WHERE q.id NOT IN (%s)';
+                $dql = sprintf($dql, implode(',', $questionIDs));
             }
 
-            if (--$maxQuestion < 1) {
-                break;
+            /** @var $q  \Doctrine\ORM\Query */
+            $q = $em->createQuery($dql);
+//            $q->setParameter('questionIDs', $questionIDs);
+            $q->setMaxResults(10 - count($questionIDs));
+
+            try {
+                $result = $q->getResult();
+            } catch (\Exception $e) {
+//                \Zend\Debug::dump($e->getMessage());
+            }
+
+            /*
+            * DQL do not allowe me to sqlect only a.name and a.id and mantaine array structure.
+             */
+            foreach($result as $question)
+            {
+                $r[] = $question->toArray();
             }
         }
 
         $quiz = new \Quiz\Entity\Quiz();
-        $quiz->setUser($user);
+        $quiz->setUserId($userId);
         $quiz->setIsClose(false);
 
         try
@@ -57,12 +94,15 @@ class Quiz extends EntityRepository
             $em->persist($quiz);
             $em->flush();
         } catch (\Exception $e) {
+            \Zend\Debug::dump($e->getMessage());
             # todo log
             return false;
         }
 
+        shuffle($r);
+
         return array(
-            'questions' => $result,
+            'questions' => $r,
             'quizId' => $quiz->getId()
         );
     }
@@ -89,11 +129,14 @@ class Quiz extends EntityRepository
         $q->setParameter('startData', $startDate);
         $q->setParameter('endDate', $endDate);
 
+//        echo $q->getSQL();
+//        \Zend\Debug::dump($q->getParameters());
         $result = array();
 
         try {
             $result = $q->getArrayResult();
         } catch (\Exception $e) {
+            \Zend\Debug::dump($e);
             # todo log
             return false;
         }
@@ -105,12 +148,21 @@ class Quiz extends EntityRepository
     {
         /** @var $quiz \Quiz\Entity\Quiz */
         $quiz = $this->find($quizId);
+//        \Zend\Debug::dump($quizId);
+//        \Zend\Debug::dump($quiz->getId());
+//        if (!$quiz) {
+//            # todo log
+//            return false;
+//        }
+
         if ($quiz->getIsClose()) {
+//            \Zend\Debug::dump(__LINE__);
             # todo log
             return false;
         }
 
         if ($quiz->getUser()->getFacebookId() != $facebookUserId) {
+//            \Zend\Debug::dump(__LINE__);
             # todo log
             return false;
         }
@@ -143,16 +195,14 @@ class Quiz extends EntityRepository
                 }
 
                 $quizAnswer->setAnswer($answer);
+                $quizAnswer->setSecond($second);
+                $quiz->addAnswer($quizAnswer);
             }
             else
             {
                 $answerId   = null;
                 $second     = 0;
             }
-
-            $quizAnswer->setSecond($second);
-
-            $quiz->addAnswer($quizAnswer);
         }
 
         $quiz->setIsClose(true);
@@ -162,6 +212,8 @@ class Quiz extends EntityRepository
             $em->persist($quiz);
             $em->flush($quiz);
         } catch (\Exception $e) {
+//            \Zend\Debug::dump(__LINE__);
+//            \Zend\Debug::dump($e->getMessage());
             # todo log
             return false;
         }
@@ -192,8 +244,8 @@ class Quiz extends EntityRepository
 
     public function canPlayAgain(User $user)
     {
-        $startDate = date('Y-m-d', mktime(0,0,0, date('m'), date('d') -1, date('Y')));
-        $endDate = date('Y-m-d', mktime(0,0,0, date('m'), date('d') + 1, date('Y')));
+        $startDate = date('Y-m-d', mktime(0,0, 0, date('m'), date('d'), date('Y'))); // from 00:00:00 today
+        $endDate = date('Y-m-d', mktime(0,0,-1, date('m'), date('d')+1, date('Y'))); // to 23:59:59 today
 
         $dql = 'SELECT COUNT(1) FROM Quiz\Entity\Quiz q WHERE q.user = :userId AND q.date BETWEEN :startDate AND :endDate AND q.isClose = true';
 
@@ -209,10 +261,27 @@ class Quiz extends EntityRepository
 
         try {
             $result = $q->getSingleScalarResult();
-            $result = ($result > 0) ? false : true;
+            $result = ($result > 2) ? false : true;
         } catch (\Exception $e) {
             # todo log
             return false;
+        }
+
+        switch($result)
+        {
+            case 1:
+                /** @var $user \Quiz\Repository\User */
+                $user = $this->entityManager->getRepository('Quiz\Entity\User');
+                if ($user->inviteTodayFriends($user->getId())) {
+                    return true;
+                }
+                return false;;
+
+            case 2:
+                return false;
+
+            case $result < 1:
+                return true;
         }
 
         return $result;

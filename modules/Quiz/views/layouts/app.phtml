@@ -1,7 +1,8 @@
 <?php echo $this->plugin('doctype')->setDoctype(\Zend\View\Helper\Doctype::HTML5); ?>
-<html xmlns:fb="http://www.facebook.com/2008/fbml">
+<html xmlns:fb="http://ogp.me/ns/fb#">
 <head>
     <meta charset="utf-8">
+    <base href="<?php echo BASE_URI?>">
     <?php
         echo $this->plugin('HeadTitle');
         echo $this->plugin('HeadMeta');
@@ -14,6 +15,9 @@
 <div id="fb-root"></div>
 <div id="container">
     <div id="header">
+        <span class="fl like-button" id="fb_like_button">
+            <fb:like href="https://www.facebook.com/MSIT.OdkryjMalopolske" send="false" width="30" show_faces="false"></fb:like>
+        </span>
         <span class="fl question question-number"><span id="question-no">Pytanie 1</span></span>
         <span class="fr question question-time"><span id="question-time">00:20</span></span>
     </div>

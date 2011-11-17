@@ -1,79 +1,49 @@
-<div class="c">
-    <h2 class="uc" id="question_title"></h2>
+<div id="begin-message" class="hide">
+    <div class="c header">
+        <p class="uc c">Zapraszamy do wzięcia udziału w konkursie</p>
+        <h1 class="uc">Odkryj Małopolskę</h1>
+    </div>
+
+    <div class="hr"></div>
+
+    <p>Każde z pytań jest warte 200 punktów, a na odpowiedź na każde z nich masz 20 sekund. Z każdą sekundą ubywa z puli 10 punktów, także spiesz się z odpowiedzią!</p>
+
+    <p class="c">
+        <a class="btn-start" href="<?php echo $this->url('app', array('action' => 'start'))?>">Weź udział w konkursie</a>
+    </p>
 </div>
 
-<div class="hr"></div>
+<div id="invite-message" class="hide">
+    <div class="c header">
+        <h2>Wyniki</h2>
+    </div>
 
-<div id="question">
-<!--    <iframe width="340" height="203" src="http://www.youtube.com/embed/6cv9H0m0v3o?autoplay=1" frameborder="0" allowfullscreen></iframe>-->
-</div>
+    <div class="hr"></div>
 
-<div id="results">
-<!--    <ul class="results_list">-->
-<!--        <li><img src="https://graph.facebook.com/widmogrod/picture" alt="widmogrod"><span class="name">Gabriel habryn</span><span class="points">123</span></li>-->
-<!--    </ul>-->
-</div>
+    <div id="results"></div>
 
-<div id="answers">
-<!--    <ul class="answers">-->
-<!--        <li>Wawel</li>-->
-<!--        <li>Zamek w Nowym Sączu</li>-->
-<!--        <li>Zamek w Targu Nowotarskim</li>-->
-<!--    </ul>-->
-</div>
-
-<div id="start_again">
     <p>Jeśli chcesz poprawić swój wynik <a onclick="sendRequestViaMultiFriendSelector();">zaproś trójkę znajomych</a> i weź udział w quizie ponownie</p>
-    <a class="btn-start-again" href="<?php echo $this->url('app', array('action' => 'start'))?>"></a>
+    <a class="btn-start-again" onclick="sendRequestViaMultiFriendSelector(); return false;" href="<?php echo $this->url('app', array('action' => 'start'))?>"></a>
 </div>
 
+<div id="play-box" class="hide">
+    <div class="c">
+        <h2 class="uc" id="question_title"></h2>
+    </div>
 
-<script type="text/javascript">
-    <?php if (false !== $this->canPlay): ?>
-    setTimeout(function(){
-        $quiz.actions.showLoader();
-        $quiz.actions.loadQuestions();
-    }, 1500);
-    <?php else: ?>
-    setTimeout(function(){
-        $('#start_again').show();
-        $('#question').hide();
-    }, 1500);
+    <div class="hr"></div>
 
-    <?php endif;?>
+    <div id="question"></div>
 
-    window.fbAsyncInit = function() {
-        FB.init({
-            appId: '322152434467439',
-            cookie: true,
-            xfbml: true,
-            oauth: true
-        });
-        FB.Event.subscribe('auth.login', function(response) {
-            window.location.reload();
-        });
-        FB.Event.subscribe('auth.logout', function(response) {
-            window.location.reload();
-        });
+    <div id="answers"></div>
+</div>
 
-        consolelog('FB ready');
-    };
-
-    function requestCallB() {
-        console.log(arguments);
+<?php
+    if ($this->canPlay) {
+        $this->plugin('InlineScript')->appendScript('$quiz.auto_start = true;');
+        $this->plugin('InlineScript')->appendScript('setTimeout($quiz.actions.loadQuestions, 300);');
+    } else {
+        $this->plugin('InlineScript')->appendScript('$quiz.auto_start = true;');
+        $this->plugin('InlineScript')->appendScript('setTimeout($quiz.actions.showResults(), 300);');
     }
-
-    function sendRequestViaMultiFriendSelector() {
-        FB.ui({method: 'apprequests',
-            message: 'My Great Request'
-        }, requestCallB);
-    }
-
-    (function() {
-        var e = document.createElement('script');
-        e.async = true;
-        e.src = document.location.protocol +
-                '//connect.facebook.net/en_US/all.js';
-        document.getElementById('fb-root').appendChild(e);
-    }());
-</script>
+?>

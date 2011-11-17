@@ -33,6 +33,7 @@ h2 {
     margin-left: -55px;
     margin-right: -50px;
 }
+.hide {display: none;}
 
 .btn-start {
     background: transparent url("../images/btn-start.png") 0 0 no-repeat;
@@ -42,6 +43,9 @@ h2 {
     overflow: hidden;
     text-indent: -200em;
     /*margin: 0 auto;*/
+}
+.btn-start.blure {
+    background-image: url("../images/btn-start-blure.png");
 }
 .btn-start-again {
     background: transparent url("../images/btn-start-again.png") 0 0 no-repeat;
@@ -96,8 +100,6 @@ h2 {
     line-height: 50px;
     font-size: 22px;
     font-weight: bold;
-
-    
     display: none;
 }
 .question-number
@@ -134,14 +136,24 @@ h2 {
     border-top: 2px solid #7084a3;
 }
 .answers li {
+    position: relative;
     margin-bottom: 10px;
-    background: transparent url("../images/bg-answer-sprite.png") 0 -38px no-repeat;
     padding-left: 30px;
     line-height: 30px;
     cursor: pointer;
 }
-.answers li:hover {
-    background-position: 0 -5px;
+
+.answers li span {
+    display: block;
+    position: absolute;
+    top:0; left: 0;
+    width: 20px;
+    height: 20px;
+    background: transparent url("../images/bg-answer-sprite.png") -5px 0  no-repeat;
+}
+
+.answers li:hover span {
+    background-position: -38px 0;
 
 }
 
@@ -181,6 +193,7 @@ a[onclick] {
 .results_list {
     display: block;
     overflow: auto;
+    max-height: 300px;
 }
 .results_list li
 {
@@ -214,4 +227,16 @@ a[onclick] {
     margin-top: 20px;
     padding-top: 20px;
     border-top: 2px solid #7084a3;
+}
+
+#fb_like_button {
+    margin-left: 30px;
+    margin-top: 10px;
+    line-height: 50px;
+    padding-top: 10px;
+    padding-left: 15px;
+    width: 100px;
+    height: 50px;
+    overflow: hidden;
+    background: transparent url("../images/bg-like.png") 0 0 no-repeat;
 }

@@ -10,6 +10,11 @@ return array(
 
     'di' => array(
         'instance' => array(
+
+            'alias' => array(
+                'quiz-model' => 'Quiz\Model\Front',
+            ),
+
             'doctrine' => array(
                 'parameters' => array(
                     'conn' => array(
