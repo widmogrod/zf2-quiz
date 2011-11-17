@@ -39,6 +39,20 @@
 
     <p>Jeśli chcesz poprawić swój wynik <a onclick="sendRequestViaMultiFriendSelector();">zaproś trójkę znajomych</a> i weź udział w quizie ponownie</p>
     <a class="btn-start-again" onclick="sendRequestViaMultiFriendSelector(); return false;" href="<?php echo $this->url('app', array('action' => 'start'))?>"></a>
+    <p class="c"><a class="show-awards-messege">Zobacz nagrody jakie możesz wygrać</a></p>
+</div>
+
+<div id="awards-messege" class="hide">
+
+    <div class="c header">
+        <h2>Nagrody</h2>
+    </div>
+
+    <div class="hr"></div>
+
+    <div id="awards"></div>
+
+    <p class="c"><a class="show-awards-messege">Zobacz nagrody jakie możesz wygrać</a></p>
 </div>
 
 <div id="play-box" class="hide">

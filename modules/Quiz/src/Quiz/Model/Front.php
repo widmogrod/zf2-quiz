@@ -120,7 +120,7 @@ class Front
         /** @var $quiz \Quiz\Repository\Quiz */
         $quiz = $this->entityManager->getRepository('Quiz\Entity\Quiz');
         $status = $quiz->getResultsForThisWeek();
-        if (!$status) {
+        if (!is_array($status)) {
             $result['status'] = false;
             $result['message'] = 'Niezmiernie nam przykro, ale podczas pobierania wyników serwer odmówił posłuszeństwa! Proszę odświerz stronę!';
         } else {
@@ -155,9 +155,21 @@ class Front
             return false;
         }
 
+//        $ue = $this->getUserEntity();
+//        if (!$ue) {
+//            return false;
+//        }
+
         /** @var $quiz \Quiz\Repository\Quiz */
         $quiz = $this->entityManager->getRepository('Quiz\Entity\Quiz');
-        return $quiz->canPlayAgain($this->getUserEntity());
+        $result = $quiz->canPlayAgain($this->getUserId());
+
+        if (isset($_GET['debug'])) {
+            \Zend\Debug::dump(__METHOD__.__LINE__);
+            \Zend\Debug::dump($result);
+        }
+
+        return $result;
     }
 
     public function userInviteFrients()

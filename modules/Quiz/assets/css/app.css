@@ -240,3 +240,22 @@ a[onclick] {
     overflow: hidden;
     background: transparent url("../images/bg-like.png") 0 0 no-repeat;
 }
+
+#awards {
+    background: transparent url("../images/bg-awards.png") 50% 50% no-repeat;
+    width: 421px;
+    height: 334px;
+    margin-left: -50px;
+}
+
+.show-awards-messege {
+    display: block;
+    height: 40px;
+    line-height: 40px;
+
+    margin-top: 10px;
+    margin-bottom: 10px;
+    color: #98a420;
+    font-weight: bold;
+    cursor: pointer !important;
+}

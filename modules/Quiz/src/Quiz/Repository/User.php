@@ -36,6 +36,8 @@ class User extends EntityRepository
             $em->persist($user);
             $em->flush();
         } catch (\Exception $e) {
+            \Zend\Debug::dump(__METHOD__.__LINE__);
+            \Zend\Debug::dump($e->getMessage());
             # todo log
             return false;
         }
@@ -76,24 +78,38 @@ class User extends EntityRepository
 
     public function inviteTodayFriends($userId)
     {
-        $startDate = date('Y-m-d', mktime(0,0, 0, date('m'), date('d'), date('Y'))); // from 00:00:00 today
-        $endDate = date('Y-m-d', mktime(0,0,-1, date('m'), date('d')+1, date('Y'))); // to 23:59:59 today
+        $startDate = date('Y-m-d H:i:s', mktime(0,0, 0, date('m'), date('d'), date('Y'))); // from 00:00:00 today
+        $endDate = date('Y-m-d H:i:s', mktime(0,0,-1, date('m'), date('d')+1, date('Y'))); // to 23:59:59 today
 
-        $dql = 'SELECT COUNT(1) FROM Quiz\Entity\FriendsInvite u WHERE u.userId = :userId u.date BETWEEN :startDate AND :endDate';
+        $dql = 'SELECT COUNT(u.id) FROM Quiz\Entity\FriendsInvite u WHERE u.userId = :userId AND u.date BETWEEN :startDate AND :endDate';
 
 
-        /** @var $q  \Doctrine\ORM\QueryBuilder */
+        /** @var $q  \Doctrine\ORM\Query */
         $q = $this->getEntityManager()->createQuery($dql);
         $q->setParameter('userId', $userId);
         $q->setParameter('startDate', $startDate);
         $q->setParameter('endDate', $endDate);
 
+        if (isset($_GET['debug'])) {
+            \Zend\Debug::dump(__METHOD__.__LINE__);
+            \Zend\Debug::dump($q->getSQL());
+            \Zend\Debug::dump($q->getParameters());
+        }
+
         $result = false;
 
         try {
-            $result = $q->getArrayResult();
+            $result = $q->getSingleScalarResult();
         } catch (\Exception $e) {
+            if (isset($_GET['debug'])) {
+                \Zend\Debug::dump(__METHOD__.__LINE__);
+                \Zend\Debug::dump($e->getMessage());
+            }
+        }
 
+        if (isset($_GET['debug'])) {
+            \Zend\Debug::dump(__METHOD__.__LINE__);
+            \Zend\Debug::dump(array('$result' => $result));
         }
 
         return $result;

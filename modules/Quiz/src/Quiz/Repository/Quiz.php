@@ -242,48 +242,63 @@ class Quiz extends EntityRepository
         return $result;
     }
 
-    public function canPlayAgain(User $user)
+    public function canPlayAgain($userId)
     {
-        $startDate = date('Y-m-d', mktime(0,0, 0, date('m'), date('d'), date('Y'))); // from 00:00:00 today
-        $endDate = date('Y-m-d', mktime(0,0,-1, date('m'), date('d')+1, date('Y'))); // to 23:59:59 today
+        $startDate = date('Y-m-d H:i:s', mktime(0,0, 0, date('m'), date('d'), date('Y'))); // from 00:00:00 today
+        $endDate = date('Y-m-d H:i:s', mktime(0,0,-1, date('m'), date('d')+1, date('Y'))); // to 23:59:59 today
 
-        $dql = 'SELECT COUNT(1) FROM Quiz\Entity\Quiz q WHERE q.user = :userId AND q.date BETWEEN :startDate AND :endDate AND q.isClose = true';
+        $dql = 'SELECT COUNT(q.id) FROM Quiz\Entity\Quiz q WHERE q.user = :userId AND q.date BETWEEN :startDate AND :endDate AND q.isClose = true';
 
 
         /** @var $q  \Doctrine\ORM\Query */
         $q = $this->getEntityManager()->createQuery($dql);
         $q->setMaxResults(1);
-        $q->setParameter('userId', $user->getId());
+        $q->setParameter('userId', $userId);
         $q->setParameter('startDate', $startDate);
         $q->setParameter('endDate', $endDate);
 
-        $result = true;
+        if (isset($_GET['debug'])) {
+            echo $q->getSQL();
+            print_r($q->getParameters());
+        }
+
+        $result = 0;
 
         try {
             $result = $q->getSingleScalarResult();
-            $result = ($result > 2) ? false : true;
+//            $result = ($result > 2) ? false : true;
         } catch (\Exception $e) {
+            if (isset($_GET['debug'])) {
+                \Zend\Debug::dump(__METHOD__.__LINE__);
+                \Zend\Debug::dump($e->getMessage());
+            }
             # todo log
             return false;
+        }
+
+        if (isset($_GET['debug'])) {
+            \Zend\Debug::dump($result);
         }
 
         switch($result)
         {
             case 1:
                 /** @var $user \Quiz\Repository\User */
-                $user = $this->entityManager->getRepository('Quiz\Entity\User');
-                if ($user->inviteTodayFriends($user->getId())) {
+                $user = $this->getEntityManager()->getRepository('Quiz\Entity\User');
+                $ci = $user->inviteTodayFriends($userId);
+                if (isset($_GET['debug'])) {
+                    \Zend\Debug::dump(__METHOD__.__LINE__);
+                    \Zend\Debug::dump(array('$ci' => $ci));
+                }
+                if ($ci) {
                     return true;
                 }
-                return false;;
+                return false;
 
             case 2:
                 return false;
-
-            case $result < 1:
-                return true;
         }
 
-        return $result;
+        return $result < 1;
     }
 }

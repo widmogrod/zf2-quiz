@@ -68,6 +68,9 @@ function __log() {
             'message_hello' : '#hello-message',
             'message_begin' : '#begin-message',
             'message_invite': '#invite-message',
+            'awards_messege': '#awards-messege',
+
+            'awards_action': '.show-awards-messege',
 
             'play_box': '#play-box',
             'fb_like': '#fb_like_button',
@@ -465,6 +468,18 @@ function __log() {
                 $($quiz.elements.message_begin).hide();
                 $($quiz.elements.message_invite).hide();
             },
+            'toggleAwards': function() {
+                var d = $($quiz.elements.awards_messege).css('display');
+                if (d == 'none') {
+                    $($quiz.elements.awards_messege).show();
+                    $($quiz.elements.message_invite).hide();
+                    $($quiz.elements.awards_action).text('Pokaż wyniki');
+                } else {
+                    $quiz.actions.showInviteMessage(true);
+                    $($quiz.elements.awards_messege).hide();
+                    $($quiz.elements.awards_action).text('Zobacz nagrody jakie możesz wygrać');
+                }
+            },
             'isValidFBFriendRequest': function(frinedInvite) {
                 __log('isValidFBFriendRequest:1', arguments);
                 if (frinedInvite)
@@ -531,6 +546,8 @@ function __log() {
     };
 
     $quiz.actions.showLoader();
+
+    $($quiz.elements.awards_action).click($quiz.actions.toggleAwards);
 
 })(jQuery);
 
