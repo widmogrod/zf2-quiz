@@ -19,7 +19,8 @@ class Mock extends Front
     {
         return array(
             'username' => 'widmogrod',
-            'first_name' => 'Gabriel'
+            'first_name' => 'Gabriel',
+            'email' => 'gabriel@habryn.pl'
         );
     }
 

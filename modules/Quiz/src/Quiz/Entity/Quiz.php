@@ -35,7 +35,7 @@ class Quiz
     protected $user_id;
 
     /**
-     * @ORM\OneToMany(targetEntity="QuizAnswer", mappedBy="quiz", cascade={"persist"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="QuizAnswer", mappedBy="quiz", cascade={"persist","remove"}, orphanRemoval=true)
      * @var \Doctrine\Common\Collections\ArrayCollection
      */
     protected $answers;

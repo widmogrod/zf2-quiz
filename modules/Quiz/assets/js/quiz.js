@@ -3,10 +3,15 @@ var Helper;
 
 function __log() {
     if (console && console.log) {
-        if ($.browser.ie) {
+        if ($.browser.msie) {
             console.log(arguments);
         } else {
-            console.log.apply(console, arguments);
+            try {
+                console.log.apply(console, arguments);
+            } catch (e) {
+                console.log(e);
+                console.log(arguments);
+            }
         }
     }
 }
@@ -60,7 +65,7 @@ function __log() {
         'errors': {
             'on_load': 'Wystąpił problem z w czasie ładowania danych. Proszę <a onclick="window.location.refresh();">odświeżyć</a> stronę ponownie.',
             'on_end': 'Wystąpił problem z w czasie ładowania danych. Proszę <a onclick="window.location.refresh();">odświeżyć</a> stronę ponownie.',
-            'firnds_invite_rq': 'Niestety do ponownej rozgrywki, zabrakło tylko paru znajomych, a dokładniej ',
+            'firnds_invite_rq': 'Niestety do ponownej rozgrywki, zabrakło tylko paru znajomych, a dokładniej '
         },
 
         'elements': {
@@ -103,6 +108,7 @@ function __log() {
         'quizId' : null,
         'auto_start' : false,
         'inviteFriends': 3,
+        'isAuth': false,
 
         'actions':
         {
@@ -204,7 +210,7 @@ function __log() {
             'loadQuestions': function() {
 
                 $quiz.actions.showPlayBox();
-                
+
                 if (null === $quiz.questionsData)
                 {
                     $quiz.actions.showLoader();
@@ -300,10 +306,11 @@ function __log() {
                         break;
 
                     case 'image':
-                        q = '<img src="/upload/'+ question.content+ '" width="340" >';
+                        q = '<img src="upload/'+ question.content+ '" width="340" >';
                         break;
 
                     case 'text':
+                        $($quiz.elements.question_title).text('Odpowiedz na pytanie:');
                         q = '<p>'+ question.content+ '</p>';
                         break;
                 }
@@ -353,7 +360,11 @@ function __log() {
             },
             'showError': function(errorMessage) {
                 $quiz.actions.hideLoader();
-                $($quiz.elements.error_container).html(errorMessage).show();
+                $($quiz.elements.error_container).html(errorMessage);
+                $($quiz.elements.error_container).show();
+            },
+            'hideError': function() {
+                $($quiz.elements.error_container).text('');
             },
             'showControls': function() {
                 $($quiz.elements.question_no_placeholder).show();
@@ -372,6 +383,8 @@ function __log() {
             'showResults': function() {
 
                 $quiz.actions.showLoader();
+                $quiz.actions.hideError();
+                
                 $.ajax({
                     'url' : $quiz.options.url.quiz_results,
                     'dataType': 'json',
@@ -413,7 +426,7 @@ function __log() {
 
                 results.push('<ul class="results_list">');
                 $(result).each(function(k, item) {
-                    results.push('<li><img src="https://graph.facebook.com/'+ item.username +'/picture"><span class="name"> '+ item.fullname +'</span><span class="points"> '+ item.points +'</span></li>');
+                    results.push('<li><img src="https://graph.facebook.com/'+ item.facebookId +'/picture"><span class="name"> '+ item.fullname +'</span><span class="points"> '+ item.points +'</span></li>');
                 });
                 results.push('</ul>');
 
@@ -427,6 +440,7 @@ function __log() {
                 }
 
                 $quiz.actions.hideLoader();
+                $quiz.actions.hideError();
                 $($quiz.elements.fb_like).show();
                 $($quiz.elements.play_box).hide();
                 $($quiz.elements.message_hello).show();
@@ -441,6 +455,7 @@ function __log() {
                 }
 
                 $quiz.actions.hideLoader();
+                $quiz.actions.hideError();
                 $($quiz.elements.fb_like).hide();
                 $($quiz.elements.play_box).hide();
                 $($quiz.elements.message_hello).hide();
@@ -454,6 +469,7 @@ function __log() {
                 }
 
                 $quiz.actions.hideLoader();
+                $quiz.actions.hideError();
                 $($quiz.elements.fb_like).hide();
                 $($quiz.elements.play_box).hide();
                 $($quiz.elements.message_hello).hide();
@@ -462,6 +478,7 @@ function __log() {
             },
             'showPlayBox': function() {
                 $quiz.actions.hideLoader();
+                $quiz.actions.hideError();
                 $($quiz.elements.fb_like).hide();
                 $($quiz.elements.play_box).show();
                 $($quiz.elements.message_hello).hide();
@@ -480,19 +497,27 @@ function __log() {
                     $($quiz.elements.awards_action).text('Zobacz nagrody jakie możesz wygrać');
                 }
             },
+            'hideCanvas':function(){
+                $quiz.actions.hideLoader();
+                $($quiz.elements.fb_like).hide();
+                $($quiz.elements.play_box).hide();
+                $($quiz.elements.message_hello).hide();
+                $($quiz.elements.message_begin).hide();
+                $($quiz.elements.message_invite).hide();
+            },
             'isValidFBFriendRequest': function(frinedInvite) {
                 __log('isValidFBFriendRequest:1', arguments);
                 if (frinedInvite)
                 {
                     __log('isValidFBFriendRequest:2', arguments);
-                    if (frinedInvite.to < $quiz.inviteFriends)
+                    if (frinedInvite.to.length < $quiz.inviteFriends)
                     {
                         __log('isValidFBFriendRequest:3', arguments);
                         $quiz.actions.showError(
                             $quiz.errors.firnds_invite_rq . $quiz.inviteFriends
                         );
 
-                        $quiz.inviteFriends -= frinedInvite.to;
+                        $quiz.inviteFriends -= frinedInvite.to.length;
                     } else {
                         __log('isValidFBFriendRequest:5', arguments);
                         $quiz.actions.validFriendRequest();
@@ -504,6 +529,7 @@ function __log() {
                 $quiz.auto_start = false;
                 __log('validFriendRequest', arguments);
                 $quiz.actions.clearAll();
+                $quiz.actions.hideCanvas();
                 $quiz.actions.showLoader();
 
                 $.ajax({
@@ -580,6 +606,9 @@ window.fbAsyncInit = function() {
         __log('likes:getLoginStatus', arguments);
 
         if (response.authResponse) {
+            $quiz.isAuth = true;
+
+            __log('likes:getLoginStatus:auth', arguments);
 
             FB.api('/'+response.authResponse.userID+'/likes/193527090658231', function(response){
 
@@ -606,13 +635,15 @@ window.fbAsyncInit = function() {
             });
 
         } else {
+            __log('likes:getLoginStatus:not-auth', arguments);
+            $quiz.isAuth = false;
             // no user session available, someone you dont know
             // niech polubi! - nie może byc blokady przez lika!
             // $quiz.actions.showHelloMessage();
-//            $quiz.actions.showBeginMessage();
+            $quiz.actions.showBeginMessage();
 
             // po 7sek pozwól grać!
-            setTimeout($quiz.actions.showBeginMessage, 7000);
+//            setTimeout($quiz.actions.showBeginMessage, 10000);
 
 //            FB.login(function(response) {
 //                if (response.authResponse) {
@@ -645,6 +676,29 @@ function sendRequestViaMultiFriendSelector() {
         message: 'Wspaniały pomysł! quiz o małopolsce!'
     }, $quiz.actions.isValidFBFriendRequest);
 }
+
+function fb_login()
+{
+    $quiz.actions.showLoader();
+
+    if ($quiz.isAuth) {
+        $quiz.actions.loadQuestions();
+    } else {
+        FB.login(function(response) {
+            if (response.authResponse) {
+                $quiz.actions.loadQuestions();
+                __log('Welcome!  Fetching your information.... ', response);
+                FB.api('/me', function(response) {
+                    __log('Good to see you:, ', response);
+                });
+            } else {
+                $quiz.actions.showBeginMessage();
+                __log('User cancelled login or did not fully authorize.', response);
+            }
+        }, {scope: 'email'});
+    }
+}
+// email, offline_access
 
 (function() {
     var e = document.createElement('script');

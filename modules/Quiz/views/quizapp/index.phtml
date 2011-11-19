@@ -24,7 +24,7 @@
     <p>Każde z pytań jest warte 200 punktów, a na odpowiedź na każde z nich masz 20 sekund. Z każdą sekundą ubywa z puli 10 punktów, także spiesz się z odpowiedzią!</p>
 
     <p class="c">
-        <a class="btn-start" href="<?php echo $this->url('app', array('action' => 'start'))?>">Weź udział w konkursie</a>
+        <a class="btn-start" onclick="fb_login()">Weź udział w konkursie</a>
     </p>
 </div>
 
@@ -70,6 +70,6 @@
 <?php
     if ($this->isAuth && !$this->canPlay) {
         $this->plugin('InlineScript')->appendScript('$quiz.auto_start = false;');
-        $this->plugin('InlineScript')->appendScript('setTimeout($quiz.actions.showResults(), 300);');
+        $this->plugin('InlineScript')->appendScript('setTimeout($quiz.actions.showResults(), 1000);');
     }
 ?>

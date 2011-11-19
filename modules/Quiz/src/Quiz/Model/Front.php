@@ -54,6 +54,7 @@ class Front
             var_dump($this->facebook->getAccessToken());
             var_dump($this->facebook->getUser());
         }
+
         return $this->facebook->getUser() > 0;
     }
 
@@ -85,14 +86,18 @@ class Front
 
     public function getUserId()
     {
-        return $this->getUserEntity()->getId();
+        if (($user = $this->getUserEntity())) {
+            return $user->getId();
+        }
+
+        return $user;
     }
 
     public function getRandomQuestions()
     {
         $result = array(
             'status' => false,
-            'message' => 'Dziękujemy za rozgrywkę, zapraszamy ponownie jutro!',
+            'message' => 'Dziękujemy za rozgrywkę, tylko dwa razy dziennie można wziąść udział w quiz-ie. Zapraszamy ponownie jutro!',
             'result' => array()
         );
 

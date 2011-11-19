@@ -59,6 +59,7 @@ h2 {
 
 #container {
     width: 520px;
+    margin: 0 auto;
     background-color: #ced228;
     background-image: url("../images/bg-main-content.png");
     background-position: 50% 50%;
@@ -259,3 +260,7 @@ a[onclick] {
     font-weight: bold;
     cursor: pointer !important;
 }
+
+.fb_dialog_content iframe { height:537px !important; }
+
+#results {margin-bottom: 10px;}

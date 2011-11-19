@@ -22,11 +22,6 @@ class User
     protected $id = null;
 
     /**
-     * @ORM\Column(type="string", length=32, nullable=false)
-     */
-    protected $username;
-
-    /**
      * @ORM\Column(type="string", length=250, nullable=true)
      */
     protected $fullname;
@@ -42,20 +37,19 @@ class User
      */
     protected $facebookId;
 
-    public function getId()
-    {
-        return $this->id;
-    }
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    protected $email;
 
-    public function setUsername($username)
+    public function __construct()
     {
-        $this->username = $username;
         $this->quizzes = new ArrayCollection();
     }
 
-    public function getUsername()
+    public function getId()
     {
-        return $this->username;
+        return $this->id;
     }
 
     public function addQuiz(Quiz $quiz, $setToOwner = true)
@@ -89,5 +83,25 @@ class User
     public function getFullname()
     {
         return $this->fullname;
+    }
+
+    public function setAccessToken($accessToken)
+    {
+        $this->accessToken = $accessToken;
+    }
+
+    public function getAccessToken()
+    {
+        return $this->accessToken;
+    }
+
+    public function setEmail($email)
+    {
+        $this->email = $email;
+    }
+
+    public function getEmail()
+    {
+        return $this->email;
     }
 }

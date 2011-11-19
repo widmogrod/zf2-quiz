@@ -20,13 +20,15 @@ class User extends EntityRepository
             $user->setFacebookId($facebookId);
         }
 
-        // sprintf('https://graph.facebook.com/%s/picture', $data['username'])
-        if (isset($data['username'])) {
-            $user->setUsername($data['username']);
-        }
-
         if (isset($data['first_name']) && isset($data['last_name'])) {
             $user->setFullname(sprintf('%s %s', $data['first_name'] , $data['last_name']));
+        }
+        elseif(isset($data['name'])) {
+            $user->setFullname($data['name']);
+        }
+
+        if (isset($data['email'])) {
+            $user->setEmail($data['email']);
         }
 
         $em = $this->getEntityManager();

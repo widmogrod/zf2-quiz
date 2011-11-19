@@ -16,18 +16,30 @@ class Quiz extends EntityRepository
     public function getQuestions(User $user)
     {
         $userId = $user->getId();
+        $startDate = date('Y-m-d', mktime(0,0,0, date('m'), date('d') - date('N') + 1, date('Y')));
+        $endDate = date('Y-m-d', mktime(0,0,0, date('m'), date('d') - (date('N') - 7), date('Y')));
 
         $em = $this->getEntityManager();
 
-        $sub = 'SELECT a.question_id FROM Quiz\Entity\QuizAnswer qa JOIN qa.answer a JOIN qa.quiz z WHERE z.user_id = :userId';
-        $dql = 'SELECT q FROM Quiz\Entity\Question q WHERE q.id NOT IN (%s)';
-        $dql = sprintf($dql, $sub);
+//        $sub = 'SELECT a.question_id FROM Quiz\Entity\QuizAnswer qa JOIN qa.answer a JOIN qa.quiz z WHERE z.user_id = :userId AND z.date BETWEEN :startData AND :endDate';
+//        $dql = 'SELECT q FROM Quiz\Entity\Question q WHERE q.id NOT IN (%s)';
+//        $dql = sprintf($dql, $sub);
+
+        // quiestions answered by user
+        $sub = 'SELECT COUNT(a.question_id) FROM Quiz\Entity\QuizAnswer qa JOIN qa.answer a JOIN qa.quiz z WHERE z.user_id = :userId AND z.date BETWEEN :startData AND :endDate';
+        // count how offen this quiestion was answered
+        $answers = 'SELECT COUNT(qaa.id) FROM Quiz\Entity\QuizAnswer qaa JOIN qaa.answer aa WHERE aa.question_id = q.id';
+        // sort quiestion by less used and last answered by user
+        $dql = 'SELECT q AS question, (%s) AS top_answers, (%s) AS user_answers FROM Quiz\Entity\Question q  ORDER BY top_answers ASC, user_answers ASC ';
+        // one dql to bind them all
+        $dql = sprintf($dql, $answers, $sub);
 
         /** @var $q  \Doctrine\ORM\Query */
         $q = $em->createQuery($dql);
         $q->setParameter('userId', $userId, \Doctrine\DBAL\Types\Type::INTEGER);
+        $q->setParameter('startData', $startDate);
+        $q->setParameter('endDate', $endDate);
         $q->setMaxResults(10);
-
 
         $result = array();
 
@@ -37,6 +49,7 @@ class Quiz extends EntityRepository
 //        die;
         try {
             $result = $q->getResult();
+//            \Doctrine\Common\Util\Debug::dump($result);
         } catch (\Exception $e) {
 //            var_dump($e->getMessage());
         }
@@ -47,8 +60,9 @@ class Quiz extends EntityRepository
         /*
          * DQL do not allowe me to sqlect only a.name and a.id and mantaine array structure.
          */
-        foreach($result as $question)
+        foreach($result as $data)
         {
+            $question = $data['question'];
             $questionIDs[] = $question->getId();
             $r[] = $question->toArray();
         }
@@ -114,13 +128,13 @@ class Quiz extends EntityRepository
         $startDate = date('Y-m-d', mktime(0,0,0, date('m'), date('d') - date('N') + 1, date('Y')));
         $endDate = date('Y-m-d', mktime(0,0,0, date('m'), date('d') - (date('N') - 7), date('Y')));
 
-        $dql = 'SELECT SUM(a.second) points, COALESCE(u.fullname, u.username) fullname, u.username FROM Quiz\Entity\Quiz q '.
+        $dql = 'SELECT SUM(a.second) * 10 points, u.fullname fullname, u.facebookId FROM Quiz\Entity\Quiz q '.
                'JOIN q.user u '.
                'JOIN q.answers a '.
                'JOIN a.answer aa '.
                'WHERE q.date BETWEEN :startData AND :endDate '.
                'AND q.isClose = true AND aa.isCorrect = true '.
-               'GROUP BY u.id, u.fullname, u.username ' .
+               'GROUP BY u.id, u.fullname, u.facebookId ' .
                'ORDER BY points DESC';
 
         /** @var $q  \Doctrine\ORM\Query */
@@ -300,5 +314,33 @@ class Quiz extends EntityRepository
         }
 
         return $result < 1;
+    }
+
+    public function clearTodayUserPlay($userId)
+    {
+        $startDate = date('Y-m-d H:i:s', mktime(0,0, 0, date('m'), date('d'), date('Y'))); // from 00:00:00 today
+        $endDate = date('Y-m-d H:i:s', mktime(0,0,-1, date('m'), date('d')+1, date('Y'))); // to 23:59:59 today
+
+        $dql = 'SELECT q FROM Quiz\Entity\Quiz q WHERE q.user = :userId AND q.date BETWEEN :startDate AND :endDate AND q.isClose = true';
+
+        $em = $this->getEntityManager();
+        /** @var $q  \Doctrine\ORM\Query */
+        $q = $em->createQuery($dql);
+        $q->setParameter('userId', $userId);
+        $q->setParameter('startDate', $startDate);
+        $q->setParameter('endDate', $endDate);
+
+        try {
+            $quizes = $q->getResult();
+            foreach($quizes as $quiz) {
+                $em->remove($quiz);
+            }
+            $em->flush();
+        } catch (\Exception $e) {
+            \Zend\Debug::dump(__METHOD__.__LINE__);
+            \Zend\Debug::dump($e->getMessage());
+            # todo log
+            return false;
+        }
     }
 }
