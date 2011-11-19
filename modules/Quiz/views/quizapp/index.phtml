@@ -68,8 +68,14 @@
 </div>
 
 <?php
-    if ($this->isAuth && !$this->canPlay) {
-        $this->plugin('InlineScript')->appendScript('$quiz.auto_start = false;');
-        $this->plugin('InlineScript')->appendScript('setTimeout($quiz.actions.showResults(), 1000);');
+    if ($this->isAuth)
+    {
+        if ($this->canPlay) {
+            $this->plugin('InlineScript')->appendScript('$quiz.is_auth_and_can_play = true;');
+        } else {
+            $this->plugin('InlineScript')->appendScript('$quiz.auto_start = false;');
+            $this->plugin('InlineScript')->appendScript('$quiz.is_auth_and_cant_play = true;');
+            $this->plugin('InlineScript')->appendScript('setTimeout($quiz.actions.showResults(), 1000);');
+        }
     }
 ?>

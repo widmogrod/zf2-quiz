@@ -109,6 +109,8 @@ function __log() {
         'auto_start' : false,
         'inviteFriends': 3,
         'isAuth': false,
+        'is_auth_and_can_play': null,
+        'is_auth_and_cant_play': null,
 
         'actions':
         {
@@ -125,7 +127,8 @@ function __log() {
                 $quiz.quizId = null;
                 $quiz.auto_start = false;
                 $quiz.inviteFriends = 3;
-
+                $quiz.is_auth_and_can_play = null;
+                $quiz.is_auth_and_cant_play = null;
             },
             'nextQuestion':function() {
                 if (!$quiz.questionsData)
@@ -622,16 +625,21 @@ window.fbAsyncInit = function() {
                 else
                 {
                     __log('likes:length=0', arguments);
-                    $quiz.actions.showHelloMessage();
+
+                    if (true === $quiz.is_auth_and_cant_play)
+                    {
+                        __log('is_auth_and_cant_play');
+                        // none
+                    }
+                    else if (true === $quiz.is_auth_and_can_play)
+                    {
+                        __log('is_auth_and_can_play');
+                        $quiz.actions.showBeginMessage();
+                    } else {
+                        $quiz.actions.showHelloMessage();
+                    }
                     // po 7sek pozwól grać!
-                    setTimeout($quiz.actions.showBeginMessage, 7000);
-//                    __log('likes:length=0:', arguments);
-//                    // jeszcze nie lubi
-//                    $quiz.actions.showHelloMessage();
                 }
-
-
-                
             });
 
         } else {
@@ -644,28 +652,6 @@ window.fbAsyncInit = function() {
 
             // po 7sek pozwól grać!
 //            setTimeout($quiz.actions.showBeginMessage, 10000);
-
-//            FB.login(function(response) {
-//                if (response.authResponse) {
-//
-//                    FB.api('/'+response.authResponse.userID+'/likes/'+ FB_APP_ID, function(response){
-//
-//                        if (response.data.length) {
-//                            __log('likes:length', arguments);
-//                            // lubi aplikację
-//                            $quiz.actions.showBeginMessage();
-//                        } else {
-//                            __log('likes:length=0:', arguments);
-//                            // jeszcze nie lubi
-//                            $quiz.actions.showHelloMessage();
-//                        }
-//
-//                    });
-//
-//                } else {
-//                    $quiz.actions.showHelloMessage();
-//                }
-//            }/*, {scope: 'email'}*/);
         }
     });
 };

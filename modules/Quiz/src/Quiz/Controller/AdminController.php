@@ -6,6 +6,7 @@ use Quiz\Form\Question;
 
 use DataGrid\DataGrid;
 use DataGrid\Renderer\HtmlTable;
+use Doctrine\ORM\Query\ResultSetMapping;
 
 /**
  * @author Gabriel Habryn <gabriel.habryn@me.com>
@@ -98,25 +99,81 @@ class AdminController extends ActionController
         $startDate = date('Y-m-d', mktime(0,0,0, date('m'), date('d') - date('N') + 1, date('Y')));
         $endDate = date('Y-m-d', mktime(0,0,0, date('m'), date('d') - (date('N') - 7), date('Y')));
 
-        $points = 'SELECT SUM(ap.second) * 10 FROM Quiz\Entity\Quiz qp '.
-                   'JOIN qp.user up '.
-                   'JOIN qp.answers ap '.
-                   'JOIN ap.answer aap '.
-                   'WHERE qp.date BETWEEN :startData AND :endDate '.
-                   'AND qp.isClose = true AND aap.isCorrect = true '.
-                   'AND up.id = u.id';
+        /*
+         * Creating nice query ;)
+         */
+        {{
+            $rsm = new ResultSetMapping;
+            $rsm->addScalarResult('points', 'points');
+            $rsm->addScalarResult('play_count', 'play_count');
+            $rsm->addScalarResult('invited_friend', 'invited_friend');
+            $rsm->addScalarResult('avatar', 'avatar');
+            $rsm->addScalarResult('id', 'id');
+            $rsm->addScalarResult('email', 'email');
+            $rsm->addScalarResult('fullname', 'fullname');
 
-        $dql = 'SELECT u.facebookId as avatar, u.id, u.fullname, u.email, '.
-                    '(%s) AS points, '.
-                    '(SELECT COUNT(q.id) FROM Quiz\Entity\Quiz q WHERE q.user_id = u.id) AS play_count, '.
-                    '(SELECT COUNT(fi.id) FROM Quiz\Entity\FriendsInvite fi WHERE fi.userId = u.id) AS invited_friend '.
-               'FROM Quiz\Entity\User u ORDER BY points DESC';
+//            $rsm->addEntityResult('Quiz\Entity\User', 'u');
+//            $rsm->addFieldResult('u', 'id', 'id');
+//            $rsm->addFieldResult('u', 'email', 'email');
+//            $rsm->addFieldResult('u', 'fullname', 'fullname');
 
-        $dql = sprintf($dql, $points);
+            $sql = 'SELECT q0_.facebookId AS avatar, q0_.id, q0_.fullname, q0_.email,
 
-        /* @var $q \Doctrine\ORM\Query */
-        $q = $em->createQuery($dql);
-        $q->setParameter('startData', $startDate);
+                        (
+                            SELECT SUM(q1_.second) * 10 FROM quiz_quiz q2_
+                            INNER JOIN quiz_user q3_ ON q2_.user_id = q3_.id
+                            INNER JOIN quiz_quiz_answer q1_ ON q2_.id = q1_.quiz_id
+                            INNER JOIN quiz_answer q4_ ON q1_.answer_id = q4_.id
+                            WHERE q2_.date BETWEEN :startDate AND :endDate
+                            AND q2_.isClose = true AND q4_.isCorrect = true
+                            AND q3_.id = q0_.id
+                            GROUP BY q2_.id
+                            ORDER BY 1 DESC
+                            LIMIT 1
+                        ) AS points,
+
+                        (
+                            SELECT COUNT(q5_.id) AS dctrn__2 FROM quiz_quiz q5_
+                            WHERE q5_.user_id = q0_.id
+                        ) AS play_count,
+
+                        (
+                            SELECT COUNT(q6_.id) AS dctrn__3 FROM quiz_friend_invite q6_
+                            WHERE q6_.userId = q0_.id
+                        ) AS invited_friend
+
+                    FROM quiz_user q0_ ORDER BY points DESC NULLS LAST';
+
+            /** @var $q \Doctrine\ORM\NativeQuery */
+            $q = $em->createNativeQuery($sql, $rsm);
+        }}
+
+        /*
+         * Previos DQL statment, is not valid becouse not support LIMIT statment in SUB-SELECT 'points'
+         * Remain for educational purpose.
+         */
+        {{
+//            $points = 'SELECT SUM(ap.second) * 10 FROM Quiz\Entity\Quiz qp '.
+//                       'JOIN qp.user up '.
+//                       'JOIN qp.answers ap '.
+//                       'JOIN ap.answer aap '.
+//                       'WHERE qp.date BETWEEN :startDate AND :endDate '.
+//                       'AND qp.isClose = true AND aap.isCorrect = true '.
+//                       'AND up.id = u.id';
+//
+//            $dql = 'SELECT u.facebookId as avatar, u.id, u.fullname, u.email, '.
+//                        '(%s) AS points, '.
+//                        '(SELECT COUNT(q.id) FROM Quiz\Entity\Quiz q WHERE q.user_id = u.id) AS play_count, '.
+//                        '(SELECT COUNT(fi.id) FROM Quiz\Entity\FriendsInvite fi WHERE fi.userId = u.id) AS invited_friend '.
+//                   'FROM Quiz\Entity\User u ORDER BY points DESC';
+//
+//            $dql = sprintf($dql, $points);
+//
+//            /* @var $q \Doctrine\ORM\Query */
+//            $q = $em->createQuery($dql);
+        }}
+
+        $q->setParameter('startDate', $startDate);
         $q->setParameter('endDate', $endDate);
 
         $grid = DataGrid::factory($q);

@@ -55,9 +55,16 @@
 
 <?php
     if ($this->canPlay) {
+        if ($this->isAuth) {
+            $this->plugin('InlineScript')->appendScript('$quiz.is_auth_and_can_play = true;');
+        }
+
         $this->plugin('InlineScript')->appendScript('$quiz.auto_start = true;');
         $this->plugin('InlineScript')->appendScript('setTimeout($quiz.actions.loadQuestions, 1000);');
     } else {
+        if ($this->isAuth) {
+            $this->plugin('InlineScript')->appendScript('$quiz.is_auth_and_cant_play = true;');
+        }
         $this->plugin('InlineScript')->appendScript('$quiz.auto_start = true;');
         $this->plugin('InlineScript')->appendScript('setTimeout($quiz.actions.showResults(), 1000);');
     }

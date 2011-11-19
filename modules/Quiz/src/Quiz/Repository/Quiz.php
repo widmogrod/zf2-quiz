@@ -3,7 +3,8 @@
 namespace Quiz\Repository;
 
 use Doctrine\ORM\EntityRepository,
-    Quiz\Entity\User;
+    Quiz\Entity\User,
+    Doctrine\ORM\Query\ResultSetMapping;
 
 /**
  * Quiz
@@ -128,19 +129,54 @@ class Quiz extends EntityRepository
         $startDate = date('Y-m-d', mktime(0,0,0, date('m'), date('d') - date('N') + 1, date('Y')));
         $endDate = date('Y-m-d', mktime(0,0,0, date('m'), date('d') - (date('N') - 7), date('Y')));
 
-        $dql = 'SELECT SUM(a.second) * 10 points, u.fullname fullname, u.facebookId FROM Quiz\Entity\Quiz q '.
-               'JOIN q.user u '.
-               'JOIN q.answers a '.
-               'JOIN a.answer aa '.
-               'WHERE q.date BETWEEN :startData AND :endDate '.
-               'AND q.isClose = true AND aa.isCorrect = true '.
-               'GROUP BY u.id, u.fullname, u.facebookId ' .
-               'ORDER BY points DESC';
+        /*
+         * Old DQL statment, remain in here for educational purpose
+         */
+        {{
+//            $dql = 'SELECT SUM(a.second) * 10 points, u.fullname fullname, u.facebookId FROM Quiz\Entity\Quiz q '.
+//                   'JOIN q.user u '.
+//                   'JOIN q.answers a '.
+//                   'JOIN a.answer aa '.
+//                   'WHERE q.date BETWEEN :startDate AND :endDate '.
+//                   'AND q.isClose = true AND aa.isCorrect = true '.
+//                   'GROUP BY u.id, u.fullname, u.facebookId ' .
+//                   'ORDER BY points DESC';
+//            /** @var $q  \Doctrine\ORM\Query */
+//            $q = $em->createQuery($dql);
+         }}
 
-        /** @var $q  \Doctrine\ORM\Query */
-        $q = $em->createQuery($dql);
-        $q->setMaxResults(10);
-        $q->setParameter('startData', $startDate);
+        /*
+         * New Native SQL for power use!
+         */
+        {{
+            $rsm = new ResultSetMapping;
+            $rsm->addScalarResult('points', 'points');
+            $rsm->addScalarResult('fullname', 'fullname');
+            $rsm->addScalarResult('facebookid', 'facebookId');
+
+            $sql = 'SELECT q0_.facebookid, q0_.fullname,
+
+                        COALESCE ((
+                            SELECT SUM(q1_.second) * 10 FROM quiz_quiz q2_
+                            INNER JOIN quiz_user q3_ ON q2_.user_id = q3_.id
+                            INNER JOIN quiz_quiz_answer q1_ ON q2_.id = q1_.quiz_id
+                            INNER JOIN quiz_answer q4_ ON q1_.answer_id = q4_.id
+                            WHERE q2_.date BETWEEN :startDate AND :endDate
+                            AND q2_.isClose = true AND q4_.isCorrect = true
+                            AND q3_.id = q0_.id
+                            GROUP BY q2_.id
+                            ORDER BY 1 DESC
+                            LIMIT 1
+                        ), 0) AS points
+
+                    FROM quiz_user q0_
+                    ORDER BY points DESC NULLS LAST';
+
+            /** @var $q \Doctrine\ORM\NativeQuery */
+            $q = $em->createNativeQuery($sql, $rsm);
+        }}
+
+        $q->setParameter('startDate', $startDate);
         $q->setParameter('endDate', $endDate);
 
 //        echo $q->getSQL();
