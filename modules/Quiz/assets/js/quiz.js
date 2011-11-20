@@ -619,8 +619,19 @@ window.fbAsyncInit = function() {
 
                 if (response && response.data.length) {
                     __log('likes:length', arguments);
-                    // lubi aplikację
-                    $quiz.actions.showBeginMessage();
+
+                    if (true === $quiz.is_auth_and_cant_play)
+                    {
+                        __log('is_auth_and_cant_play');
+                        // none
+                    }
+                    else if (true === $quiz.is_auth_and_can_play)
+                    {
+                        __log('is_auth_and_can_play');
+                        $quiz.actions.showBeginMessage();
+                    } else {
+                        $quiz.actions.showHelloMessage();
+                    }
                 }
                 else
                 {
@@ -647,8 +658,8 @@ window.fbAsyncInit = function() {
             $quiz.isAuth = false;
             // no user session available, someone you dont know
             // niech polubi! - nie może byc blokady przez lika!
-            // $quiz.actions.showHelloMessage();
-            $quiz.actions.showBeginMessage();
+            $quiz.actions.showHelloMessage();
+//            $quiz.actions.showBeginMessage();
 
             // po 7sek pozwól grać!
 //            setTimeout($quiz.actions.showBeginMessage, 10000);

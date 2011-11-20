@@ -208,6 +208,7 @@ a[onclick] {
 .results_list li img {
     float: left;
     width: 50px;
+    display: block;
     margin-right: 10px;
 }
 .results_list li span.name {
@@ -215,11 +216,24 @@ a[onclick] {
     display: block;
     height: 55px;
     line-height: 55px;
+    overflow: hidden;
+    white-space: nowrap;
+    z-index: 1;
+    position: absolute;
+    overflow: hidden;
+    width: 220px;
+    top: 0;
+    right: 60;
+    left:60px;
 }
 .results_list li span.points {
     font-weight: bold;
     float: right;
     width: 50px;
+    z-index: 2;
+    position: absolute;
+    top: 0;
+    right: 0;
 }
 
 
@@ -234,11 +248,10 @@ a[onclick] {
     margin-left: 30px;
     margin-top: 10px;
     line-height: 50px;
-    padding-top: 10px;
-    padding-left: 15px;
-    width: 85px;
-    height: 50px;
-    overflow: hidden;
+    padding-left: 10px;
+    width: 90px;
+    /*height: 50px;*/
+    /*overflow: hidden;*/
     background: transparent url("../images/bg-like.png") 0 0 no-repeat;
 }
 
@@ -264,3 +277,5 @@ a[onclick] {
 .fb_dialog_content iframe { height:537px !important; }
 
 #results {margin-bottom: 10px;}
+
+.extra_small {font-size: 14px; line-height: 1em;}
