@@ -97,7 +97,7 @@ class Front
     {
         $result = array(
             'status' => false,
-            'message' => 'Dziękujemy za rozgrywkę, tylko dwa razy dziennie można wziąść udział w quiz-ie. Zapraszamy ponownie jutro!',
+            'message' => 'Dziękujemy za rozgrywkę, tylko dwa razy dziennie można wziąć udział w quiz-ie. Zapraszamy ponownie jutro!',
             'result' => array()
         );
 

@@ -18,7 +18,7 @@ class Quiz extends EntityRepository
     {
         $userId = $user->getId();
         $startDate = date('Y-m-d', mktime(0,0,0, date('m'), date('d') - date('N') + 1, date('Y')));
-        $endDate = date('Y-m-d', mktime(0,0,0, date('m'), date('d') - (date('N') - 7), date('Y')));
+        $endDate = date('Y-m-d H:i:s', mktime(0,0,-1, date('m'), date('d') - (date('N') - 8), date('Y')));
 
         $em = $this->getEntityManager();
 
@@ -127,7 +127,7 @@ class Quiz extends EntityRepository
         $em = $this->getEntityManager();
 
         $startDate = date('Y-m-d', mktime(0,0,0, date('m'), date('d') - date('N') + 1, date('Y')));
-        $endDate = date('Y-m-d', mktime(0,0,0, date('m'), date('d') - (date('N') - 7), date('Y')));
+        $endDate = date('Y-m-d H:i:s', mktime(0,0,-1, date('m'), date('d') - (date('N') - 8), date('Y')));
 
         /*
          * Old DQL statment, remain in here for educational purpose
@@ -170,7 +170,8 @@ class Quiz extends EntityRepository
                         ), 0) AS points
 
                     FROM quiz_user q0_
-                    ORDER BY points DESC NULLS LAST';
+                    ORDER BY points DESC NULLS LAST
+                    LIMIT 30';
 
             /** @var $q \Doctrine\ORM\NativeQuery */
             $q = $em->createNativeQuery($sql, $rsm);

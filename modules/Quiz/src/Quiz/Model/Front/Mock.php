@@ -19,14 +19,14 @@ class Mock extends Front
     {
         return array(
             'username' => 'widmogrod',
-            'first_name' => 'Gabriel',
+            'first_name' => 'Gabriel v2',
             'email' => 'gabriel@habryn.pl'
         );
     }
 
     public function getFacebookUserId()
     {
-        return 666;
+        return 123;
     }
 }
  

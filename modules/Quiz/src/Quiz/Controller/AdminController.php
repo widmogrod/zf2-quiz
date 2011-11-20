@@ -97,7 +97,11 @@ class AdminController extends ActionController
         $repository = $em->getRepository('Quiz\Entity\Question');
 
         $startDate = date('Y-m-d', mktime(0,0,0, date('m'), date('d') - date('N') + 1, date('Y')));
-        $endDate = date('Y-m-d', mktime(0,0,0, date('m'), date('d') - (date('N') - 7), date('Y')));
+        $endDate = date('Y-m-d H:i:s', mktime(0,0,-1, date('m'), date('d') - (date('N') - 8), date('Y')));
+
+
+//        echo $startDate;
+//        echo $endDate;
 
         /*
          * Creating nice query ;)
@@ -146,6 +150,8 @@ class AdminController extends ActionController
 
             /** @var $q \Doctrine\ORM\NativeQuery */
             $q = $em->createNativeQuery($sql, $rsm);
+
+//            echo $q->getSQL();
         }}
 
         /*
@@ -175,6 +181,7 @@ class AdminController extends ActionController
 
         $q->setParameter('startDate', $startDate);
         $q->setParameter('endDate', $endDate);
+//        \Zend\Debug::dump($q->getParameters());
 
         $grid = DataGrid::factory($q);
         $grid->setSpecialColumn('avatar', function($row) {
