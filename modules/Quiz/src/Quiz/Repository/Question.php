@@ -62,7 +62,8 @@ class Question extends EntityRepository
 
 
 		$answerNo = 0;
-        foreach($question->getAnswers() as $answer) 
+        $answers = $question->getAnswers();
+        foreach($answers as $answer)
 		{
 			++$answerNo;
 			if (!isset($data['answers'][$answerNo])) {
@@ -77,7 +78,17 @@ class Question extends EntityRepository
             $answer->setIsCorrect($isCorrect);
         }
 
-        //$em->persist($question);
+        // add missing questions
+        while (++$answerNo <= 3)
+        {
+            $answerName = $data['answers'][$answerNo];
+            $isCorrect = (isset($data['correct']) && $data['correct'] == $answerNo);
+
+            $answer = new Entity\Answer();
+            $answer->setName($answerName);
+            $answer->setIsCorrect($isCorrect);
+            $question->addAnswer($answer);
+        }
 
         try {
             $em->flush();

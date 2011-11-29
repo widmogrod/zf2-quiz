@@ -28,22 +28,12 @@ class QuizAnswer
     protected $quiz;
 
     /**
-     * @ORM\Column(type="integer", nullable=false)
-     */
-    protected $quiz_id;
-
-    /**
      * Unidirectional
      * @ORM\ManyToOne(targetEntity="Answer", cascade={"persist"}, fetch="LAZY")
      * @ORM\JoinColumn(name="answer_id", referencedColumnName="id")
      * @var Answer
      */
     protected $answer;
-
-    /**
-     * @ORM\Column(type="integer", nullable=false)
-     */
-    protected $answer_id;
 
     /**
      * @ORM\Column(type="smallint")
@@ -62,7 +52,6 @@ class QuizAnswer
             $quiz->addAnswer($this, false);
         }
         $this->quiz = $quiz;
-        $this->setQuizId($quiz->getId());
     }
 
     public function getQuiz()
@@ -76,7 +65,6 @@ class QuizAnswer
     public function setAnswer(Answer $answer)
     {
         $this->answer = $answer;
-        $this->setAnswerId($answer->getId());
     }
 
     /**
@@ -101,29 +89,5 @@ class QuizAnswer
     public function getSecond()
     {
         return $this->second;
-    }
-
-    /*
-     * Methods for FKs
-     */
-
-    public function setAnswerId($answer_id)
-    {
-        $this->answer_id = $answer_id;
-    }
-
-    public function getAnswerId()
-    {
-        return $this->answer_id;
-    }
-
-    public function setQuizId($quiz_id)
-    {
-        $this->quiz_id = $quiz_id;
-    }
-
-    public function getQuizId()
-    {
-        return $this->quiz_id;
     }
 }

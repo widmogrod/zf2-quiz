@@ -10,9 +10,9 @@ return array(
 
     'di' => array(
         'instance' => array(
-            'doctrine' => array(
+            'doctrine_connection' => array(
                 'parameters' => array(
-                    'conn' => array(
+                    'params' => array(
                         'driver'   => 'pdo_pgsql',
                         'host'     => 'localhost',
                         'port'     => '5432',

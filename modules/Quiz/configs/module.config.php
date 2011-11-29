@@ -22,7 +22,7 @@ return array(
             'quiz-model' => array(
                 'parameters' => array(
                     'facebook' => 'facebook',
-                    'doctrine' => 'doctrine'
+                    'entityManager' => 'doctrine_em'
                 )
             ),
 
@@ -93,23 +93,31 @@ return array(
                 ),
             ),
 
+            'doctrine_driver_chain' => array(
+                'parameters' => array(
+                    'drivers' => array(
+                        'application_annotation_driver' => array(
+                            'class'           => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
+                            'namespace' => 'Quiz\Entity',
+                            'paths'           => array(__DIR__ . '/../src/Quiz/Entity'),
+                        ),
+                    )
+                )
+            ),
+
             'doctrine' => array(
                 'parameters' => array(
                     'config' => array(
-                        'auto-generate-proxies'     => true,
-                        // @todo: figure out how to de-couple the Proxy dir
-                        'proxy-dir'                 => __DIR__ . '/../src/Quiz/Proxy',
-                        'proxy-namespace'           => 'Quiz\Proxy',
-                        'metadata-driver-impl'      => array(
-                             'application-annotation-driver' => array(
-                                 'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
-                                 'namespace' => 'Quiz\Entity',
-                                 'paths' => array(
-                                     __DIR__ . '/../src/Quiz/Entity'
-                                 ),
-                                 'cache-class' => 'Doctrine\Common\Cache\ArrayCache',
-                             )
+                        'auto_generate_proxies' => false,
+                        'proxy_dir' => __DIR__ . '/../../../data/SpiffyDoctrine/Proxy',
+                        'metadata_driver_impl' => array(
+                            'doctrine_annotationdriver' => array(
+                                'cache_class' => 'Doctrine\Common\Cache\ApcCache'
+                            )
                         ),
+                        'metadata_cache_impl' => 'Doctrine\Common\Cache\ApcCache',
+                        'query_cache_impl'    => 'Doctrine\Common\Cache\ApcCache',
+                        'result_cache_impl'   => 'Doctrine\Common\Cache\ApcCache'
                     ),
                 ),
             ),

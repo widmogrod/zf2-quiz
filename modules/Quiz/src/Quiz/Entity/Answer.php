@@ -28,11 +28,6 @@ class Answer
     protected $question;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    protected $question_id;
-
-    /**
      * @ORM\Column(type="string", length=100, nullable=false)
      */
     protected $name;
@@ -85,21 +80,7 @@ class Answer
         return array(
             'id' => $this->id,
             'name' => $this->name,
-            'isCorrect' => $this->isCorrect,
+//            'isCorrect' => $this->isCorrect,
         );
-    }
-
-    /*
-     * Methods for FKs
-     */
-
-    public function setQuestionId($question_id)
-    {
-        $this->question_id = $question_id;
-    }
-
-    public function getQuestionId()
-    {
-        return $this->question_id;
     }
 }

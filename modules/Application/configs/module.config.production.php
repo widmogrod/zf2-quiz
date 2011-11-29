@@ -15,9 +15,9 @@ return array(
                 'quiz-model' => 'Quiz\Model\Front',
             ),
 
-            'doctrine' => array(
+            'doctrine_connection' => array(
                 'parameters' => array(
-                    'conn' => array(
+                    'params' => array(
                         'driver'   => 'pdo_pgsql',
                         'host'     => 'localhost',
                         'port'     => '5432',

@@ -1,16 +1,19 @@
 var $quiz;
 var Helper;
 
-function __log() {
-    if (console && console.log) {
+function __log()
+{
+    if (window.console !== undefined)
+    {
         if ($.browser.msie) {
-            console.log(arguments);
+//            try {
+//                console.log(arguments);
+//            } catch (e) {
+//            }
         } else {
             try {
                 console.log.apply(console, arguments);
             } catch (e) {
-                console.log(e);
-                console.log(arguments);
             }
         }
     }
@@ -594,6 +597,9 @@ window.fbAsyncInit = function() {
 
     FB.Event.subscribe('auth.login', function(response) {
         __log('auth.login', this, arguments);
+        $quiz.actions.showBeginMessage();
+        $('#auth-action').hide();
+        $('#like-action-mock').show();
     });
     FB.Event.subscribe('auth.logout', function(response) {
         __log('auth.logout', this, arguments);
@@ -659,7 +665,11 @@ window.fbAsyncInit = function() {
             // no user session available, someone you dont know
             // niech polubi! - nie może byc blokady przez lika!
             $quiz.actions.showHelloMessage();
+            $('#auth-action').show();
+            $('#like-action-mock').hide();
 //            $quiz.actions.showBeginMessage();
+
+
 
             // po 7sek pozwól grać!
 //            setTimeout($quiz.actions.showBeginMessage, 10000);

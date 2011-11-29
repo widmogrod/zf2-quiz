@@ -18,10 +18,8 @@ class AdminController extends ActionController
         /* @var $rq \Zend\Http\PhpEnvironment\Request */
         $rq = $this->getRequest();
 
-        /* @var $doctrine \SpiffyDoctrine\Service\Doctrine */
-        $doctrine = $this->getLocator()->get('doctrine');
         /* @var $em \Doctrine\ORM\EntityManager */
-        $em = $doctrine->getEntityManager();
+        $em = $this->getLocator()->get('doctrine_em');
         /* @var $repository \Quiz\Repository\Question */
         $repository = $em->getRepository('Quiz\Entity\Question');
 
@@ -62,10 +60,8 @@ class AdminController extends ActionController
 
     public function quizlistAction()
     {
-        /* @var $doctrine \SpiffyDoctrine\Service\Doctrine */
-        $doctrine = $this->getLocator()->get('doctrine');
         /* @var $em \Doctrine\ORM\EntityManager */
-        $em = $doctrine->getEntityManager();
+        $em = $this->getLocator()->get('doctrine_em');
 
         /* @var $repository \Quiz\Repository\Question */
         $repository = $em->getRepository('Quiz\Entity\Question');
@@ -88,10 +84,8 @@ class AdminController extends ActionController
 
     public function quizusersAction()
     {
-        /* @var $doctrine \SpiffyDoctrine\Service\Doctrine */
-        $doctrine = $this->getLocator()->get('doctrine');
         /* @var $em \Doctrine\ORM\EntityManager */
-        $em = $doctrine->getEntityManager();
+        $em = $this->getLocator()->get('doctrine_em');
 
         /* @var $repository \Quiz\Repository\Question */
         $repository = $em->getRepository('Quiz\Entity\Question');
@@ -208,19 +202,18 @@ class AdminController extends ActionController
         /* @var $rq \Zend\Http\PhpEnvironment\Request */
         $rq = $this->getRequest();
 
-        /* @var $doctrine \SpiffyDoctrine\Service\Doctrine */
-        $doctrine = $this->getLocator()->get('doctrine');
         /* @var $em \Doctrine\ORM\EntityManager */
-        $em = $doctrine->getEntityManager();
+        $em = $this->getLocator()->get('doctrine_em');
 
         $userId = $rq->query()->get('id');
+
         $startDate = date('Y-m-d', mktime(0,0,0, date('m'), date('d') - date('N') + 1, date('Y')));
-        $endDate = date('Y-m-d', mktime(0,0,0, date('m'), date('d') - (date('N') - 7), date('Y')));
+        $endDate = date('Y-m-d H:i:s', mktime(0,0,-1, date('m'), date('d') - (date('N') - 8), date('Y')));
 
         // quiestions answered by user
-        $sub = 'SELECT COUNT(a.question_id) FROM Quiz\Entity\QuizAnswer qa JOIN qa.answer a JOIN qa.quiz z WHERE z.user_id = :userId AND z.date BETWEEN :startData AND :endDate';
+        $sub = 'SELECT COUNT(a.id) FROM Quiz\Entity\QuizAnswer qa JOIN qa.answer a JOIN qa.quiz z WHERE z.user = :userId AND a.question = q.id AND z.date BETWEEN :startDate AND :endDate';
         // count how offen this quiestion was answered
-        $answers = 'SELECT COUNT(qaa.id) FROM Quiz\Entity\QuizAnswer qaa JOIN qaa.answer aa WHERE aa.question_id = q.id';
+        $answers = 'SELECT COUNT(qaa.id) FROM Quiz\Entity\QuizAnswer qaa JOIN qaa.answer aa WHERE aa.question = q.id';
         // sort quiestion by less used and last answered by user
         $dql = 'SELECT q, (%s) AS top_answers, (%s) AS user_answers FROM Quiz\Entity\Question q  ORDER BY top_answers ASC, user_answers ASC ';
         // one dql to bind them all
@@ -229,7 +222,7 @@ class AdminController extends ActionController
         /** @var $q  \Doctrine\ORM\Query */
         $q = $em->createQuery($dql);
         $q->setParameter('userId', $userId, \Doctrine\DBAL\Types\Type::INTEGER);
-        $q->setParameter('startData', $startDate);
+        $q->setParameter('startDate', $startDate);
         $q->setParameter('endDate', $endDate);
 //        $q->setMaxResults(10);
 
@@ -250,10 +243,8 @@ class AdminController extends ActionController
     {
         /* @var $rq \Zend\Http\PhpEnvironment\Request */
         $rq = $this->getRequest();
-        /* @var $doctrine \SpiffyDoctrine\Service\Doctrine */
-        $doctrine = $this->getLocator()->get('doctrine');
         /* @var $em \Doctrine\ORM\EntityManager */
-        $em = $doctrine->getEntityManager();
+        $em = $this->getLocator()->get('doctrine_em');
 
         $userId = $rq->query()->get('id');
 

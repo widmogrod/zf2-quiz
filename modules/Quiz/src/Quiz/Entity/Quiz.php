@@ -29,12 +29,6 @@ class Quiz
     protected $user;
 
     /**
-     * @ORM\Column(type="integer", nullable=false)
-     * @var
-     */
-    protected $user_id;
-
-    /**
      * @ORM\OneToMany(targetEntity="QuizAnswer", mappedBy="quiz", cascade={"persist","remove"}, orphanRemoval=true)
      * @var \Doctrine\Common\Collections\ArrayCollection
      */
@@ -109,25 +103,5 @@ class Quiz
     public function getDate()
     {
         return $this->date;
-    }
-
-    /*
-     * Methods for FKs
-     */
-
-    /**
-     * @param  $user_id
-     */
-    public function setUserId($user_id)
-    {
-        $this->user_id = $user_id;
-    }
-
-    /**
-     * @return
-     */
-    public function getUserId()
-    {
-        return $this->user_id;
     }
 }

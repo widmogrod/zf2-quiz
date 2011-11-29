@@ -1,7 +1,7 @@
 <?php
 namespace Quiz\Model;
 
-use SpiffyDoctrine\Service\Doctrine;
+use Doctrine\ORM\EntityManager;
 
 /**
  * @author Gabriel Habryn <gabriel.habryn@me.com>
@@ -20,10 +20,10 @@ class Front
 
     protected $isAuth;
 
-    public function __construct(\Facebook $facebook, Doctrine $doctrine)
+    public function __construct(\Facebook $facebook, EntityManager $entityManager)
     {
         $this->facebook = $facebook;
-        $this->entityManager = $doctrine->getEntityManager();
+        $this->entityManager = $entityManager;
     }
 
     public function getUserEntity()

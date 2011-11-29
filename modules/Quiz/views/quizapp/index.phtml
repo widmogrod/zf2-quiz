@@ -9,7 +9,8 @@
     <p>Aby wziąć udział w konkursie należy <strong>polubić</strong> naszą stronę i odpowiedzieć na 10 quizowych pytań związanych z Małopolską. Niektóre z nich są zagadkami dźwiękowymi, więc włącz głośniki!</p>
     <p><strong>Do wygrania atrakcyjne nagrody</strong></p>
     <p class="c">
-        <span class="btn-start blure">Weź udział w konkursie</span>
+        <span id="auth-action" class="btn-start" onclick="fb_login()">Weź udział w konkursie</span>
+        <span id="like-action-mock" class="btn-start blure">Weź udział w konkursie</span>
     </p>
     <p class="extra_small"><small>Biorąc udział w konkursie Odkryj Małopolskę akceptujesz regulamin konkursu. Pełny tekst regulaminu znajduje się <a target="_blank" href="Regulamin.pdf">tutaj</a>.<br/>
               Ta promocja nie jest sponsorowana, administrowana, ani zorganizowana przez Facebook. Dołączając do konkursu przekazujesz swoje prywatne informacje Organizatorowi. Informacje te zostaną wykorzystane tylko do celów promocyjnych zabawy.</small></p>
@@ -28,6 +29,8 @@
     <p class="c">
         <a class="btn-start" onclick="fb_login()">Weź udział w konkursie</a>
     </p>
+    <p class="extra_small"><small>Biorąc udział w konkursie Odkryj Małopolskę akceptujesz regulamin konkursu. Pełny tekst regulaminu znajduje się <a target="_blank" href="Regulamin.pdf">tutaj</a>.<br/>
+              Ta promocja nie jest sponsorowana, administrowana, ani zorganizowana przez Facebook. Dołączając do konkursu przekazujesz swoje prywatne informacje Organizatorowi. Informacje te zostaną wykorzystane tylko do celów promocyjnych zabawy.</small></p>
 </div>
 
 <div id="invite-message" class="hide">
@@ -39,6 +42,7 @@
 
     <div id="results"></div>
 
+    <p>W najbliższą niedzielę (<?php echo date('d.m', mktime(0,0,0, date('m'), date('d') + (7-date('N')), date('y')))?>) pierwsze 30 osób z rankingu otrzyma od nas zestawy nagród.</p>
     <p>Jeśli chcesz poprawić swój wynik <a onclick="sendRequestViaMultiFriendSelector();">zaproś trójkę znajomych</a> i weź udział w quizie ponownie</p>
     <a class="btn-start-again" onclick="sendRequestViaMultiFriendSelector(); return false;" href="<?php echo $this->url('app', array('action' => 'start'))?>"></a>
     <p class="c"><a class="show-awards-messege">Zobacz nagrody jakie możesz wygrać</a></p>
