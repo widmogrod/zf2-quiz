@@ -1,1 +1,10 @@
 First playground application, witch use ZF2 and Doctrine2
+
+TODO:
+- better question randomization
+- better question manage
+- better user manage
+
+- new gameplay including achivements
+- image upload
+- question preview

@@ -31,7 +31,7 @@ class Quiz extends EntityRepository
         // count how offen this quiestion was answered
         $answers = 'SELECT COUNT(qaa.id) FROM Quiz\Entity\QuizAnswer qaa JOIN qaa.answer aa WHERE aa.question = q.id';
         // sort quiestion by less used and last answered by user
-        $dql = 'SELECT q, (%s) AS top_answers, (%s) AS user_answers FROM Quiz\Entity\Question q  ORDER BY top_answers ASC, user_answers ASC ';
+        $dql = 'SELECT q, (%s) AS top_answers, (%s) AS user_answers FROM Quiz\Entity\Question q  WHERE q.isActive = true ORDER BY top_answers ASC, user_answers ASC ';
         // one dql to bind them all
         $dql = sprintf($dql, $answers, $sub);
 

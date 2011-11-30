@@ -1,8 +1,8 @@
 [submodule "modules/SpiffyDoctrine"]
 	path = modules/SpiffyDoctrine
 	url = https://SpiffyJr@github.com/SpiffyJr/SpiffyDoctrine.git
-[submodule "library/ZendFramework"]
-	path = library/ZendFramework
+[submodule "vendor/ZendFramework"]
+	path = vendor/ZendFramework
 	url = git@github.com:zendframework/zf2.git
 [submodule "modules/User"]
 	path = modules/User

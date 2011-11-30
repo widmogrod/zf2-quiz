@@ -19,6 +19,7 @@ class Question extends EntityRepository
         $question->setTitle($data['title']);
         $question->setContent($data['content']);
         $question->setType($data['type']);
+        $question->setIsActive($data['isActive']);
 
         foreach($data['answers'] as $answerNo => $answerName)
         {
@@ -49,6 +50,7 @@ class Question extends EntityRepository
         $question = $this->find($id);
         $question->setTitle($data['title']);
         $question->setType($data['type']);
+        $question->setIsActive($data['isActive']);
 
         /**
          * set content, if file is updated
@@ -107,6 +109,7 @@ class Question extends EntityRepository
         $result['title'] = $question->getTitle();
         $result['content'] = $question->getContent();
         $result['type'] = $question->getType();
+        $result['isActive'] = $question->getIsActive();
         $result['answers'] = array();
         $result['correct'] = null;
 

@@ -1,5 +1,5 @@
 <?php
-$env = include __DIR__ . '/../configs/env.config.php';
+$env = include __DIR__ . '/../config/env.config.php';
 $host = strtolower(trim($_SERVER['SERVER_NAME']));
 
 error_reporting(E_ALL);
@@ -14,8 +14,8 @@ defined('APPLICATION_PATH')
 
 // Ensure ZF is on the include path
 set_include_path(implode(PATH_SEPARATOR, array(
-    realpath(__DIR__ . '/../library'),
-    realpath(__DIR__ . '/../library/ZendFramework/library'),
+    realpath(__DIR__ . '/../vendor'),
+    realpath(__DIR__ . '/../vendor/ZendFramework/library'),
     get_include_path(),
 )));
 
@@ -25,7 +25,7 @@ date_default_timezone_set('Europe/Warsaw');
 require_once 'Zend/Loader/AutoloaderFactory.php';
 Zend\Loader\AutoloaderFactory::factory(array('Zend\Loader\StandardAutoloader' => array()));
 
-$appConfig = new Zend\Config\Config(include __DIR__ . '/../configs/application.config.php');
+$appConfig = new Zend\Config\Config(include __DIR__ . '/../config/application.config.php');
 
 $moduleLoader = new Zend\Loader\ModuleAutoloader($appConfig['module_paths']);
 $moduleLoader->register();

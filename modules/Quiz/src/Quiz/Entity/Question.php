@@ -54,6 +54,12 @@ class Question
      */
     protected $answers;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    protected $isActive;
+
+
     public function __construct()
     {
         $this->answers = new ArrayCollection();
@@ -133,5 +139,15 @@ class Question
             'title' => $this->title,
             'answers' => $answers
         );
+    }
+
+    public function setIsActive($isActive)
+    {
+        $this->isActive = $isActive;
+    }
+
+    public function getIsActive()
+    {
+        return $this->isActive;
     }
 }

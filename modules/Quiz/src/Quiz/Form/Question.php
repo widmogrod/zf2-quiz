@@ -98,6 +98,11 @@ class Question extends TwitterForm\Form
             ));
         }}
 
+        $this->addElement('checkbox', 'isActive', array(
+            'label' => 'Widoczne',
+            'description' => 'Czy wyświetlać pytanie użytkownikowi?',
+        ));
+
         $this->initAnswers();
 
         $this->addActionElement('submit', 'save', array(
