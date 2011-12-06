@@ -40,7 +40,7 @@ return array(
                             'quizadmin' => array(
                                 '@twitter_bootstrap_css',
                                 '@quiz_admin_css',
-                                '@quiz_admin_js'
+                                '@quiz_admin_js',
                             ),
                         ),
 
@@ -83,7 +83,18 @@ return array(
                                         'assets' => array(
                                             'js/jquery.min.js',
                                             'http://html5shim.googlecode.com/svn/trunk/html5.js',
+                                            '@twitter_bootstrap_scrollspy_js',
+                                            '@twitter_bootstrap_modal_js',
+                                            '@twitter_bootstrap_dropdown_js',
                                             'js/admin.js',
+                                        ),
+                                        /*
+                                         * It's required in case of using a @reference.
+                                         * Without it, ViewHelperSetup can't determinate
+                                         * what kind of content assets are.. ie. *.js or *.css
+                                         */
+                                        'options' => array(
+                                            'output' => 'quiz_admin.js'
                                         )
                                     )
                                 ),

@@ -1,0 +1,43 @@
+<?php 
+
+    $title = $this->data['title'];
+    $content = $this->data['content'];
+    $answers = (array) $this->data['answers'];
+
+    $type = $this->data['type'];
+    switch($type)
+    {
+        case Quiz\Entity\Question::TYPE_AUDIO:
+        case Quiz\Entity\Question::TYPE_VIDEO:
+            preg_match('/v=([^?&]+)/', $content, $mached);
+            $videoId = $mached[1];
+
+            $mock = '<iframe width="340" height="203" src="http://www.youtube.com/embed/%s?autoplay=1" frameborder="0" allowfullscreen></iframe>';
+            $content = sprintf($mock, $videoId);
+            break;
+
+        case Quiz\Entity\Question::TYPE_IMAGE:
+            $mock = '<img src="upload/%s" width="340" >';
+            $content = sprintf($mock, $content);
+            break;
+
+        case Quiz\Entity\Question::TYPE_IMAGE:
+            $content = 'Odpowiedz na pytanie:';
+            break;
+    }
+    
+?>
+
+<h2><?php echo $title ?></h2>
+<p><?php echo $content; ?></p>
+
+<div class="well">
+    <h3>Odpowiedzi</h3>
+    <ul>
+        <?php foreach($answers as $answer):?>
+        <li><?php echo $answer ?></li>
+        <?php endforeach; ?>
+    </ul>
+</div>
+
+

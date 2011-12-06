@@ -2,7 +2,8 @@
 
 namespace Quiz\Repository;
 
-use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\EntityRepository,
+    Doctrine\ORM\Query\ResultSetMapping;
 
 /**
  * User
@@ -47,37 +48,6 @@ class User extends EntityRepository
         return $user;
     }
 
-    public function saveAnswers($facebookId, array $answers)
-    {
-        foreach($answers as $answer)
-        {
-//            $answers = new \Quiz\Entity\QuizAnswer();
-//            $answers->setAnswer();
-//            $answers->setQuiz();
-//            $answers->setSecond();
-        }
-    }
-
-    public function getResults()
-    {
-        $dql = 'SELECT q, a FROM Quiz\Entity\Question q JOIN q.answers a';
-
-
-        /** @var $q  \Doctrine\ORM\QueryBuilder */
-        $q = $this->getEntityManager()->createQuery($dql);
-        $q->setMaxResults(10);
-
-        $result = array();
-
-        try {
-            $result = $q->getArrayResult();
-        } catch (\Exception $e) {
-
-        }
-
-        return $result;
-    }
-
     public function inviteTodayFriends($userId)
     {
         $startDate = date('Y-m-d H:i:s', mktime(0,0, 0, date('m'), date('d'), date('Y'))); // from 00:00:00 today
@@ -115,5 +85,60 @@ class User extends EntityRepository
         }
 
         return $result;
+    }
+
+    public function getQueryUserSummaryList($startDate, $endDate)
+    {
+        /* @var $em \Doctrine\ORM\EntityManager */
+        $em = $this->getEntityManager();
+
+        /*
+         * Creating nice query ;)
+         */
+        {{
+            $rsm = new ResultSetMapping;
+            $rsm->addScalarResult('points', 'points');
+            $rsm->addScalarResult('play_count', 'play_count');
+            $rsm->addScalarResult('invited_friend', 'invited_friend');
+            $rsm->addScalarResult('avatar', 'avatar');
+            $rsm->addScalarResult('id', 'id');
+            $rsm->addScalarResult('email', 'email');
+            $rsm->addScalarResult('fullname', 'fullname');
+
+            $sql = 'SELECT q0_.facebookId AS avatar, q0_.id, q0_.fullname, q0_.email,
+
+                        (
+                            SELECT SUM(q1_.second) * 10 FROM quiz_quiz q2_
+                            INNER JOIN quiz_user q3_ ON q2_.user_id = q3_.id
+                            INNER JOIN quiz_quiz_answer q1_ ON q2_.id = q1_.quiz_id
+                            INNER JOIN quiz_answer q4_ ON q1_.answer_id = q4_.id
+                            WHERE q2_.date BETWEEN :startDate AND :endDate
+                            AND q2_.isClose = true AND q4_.isCorrect = true
+                            AND q3_.id = q0_.id
+                            GROUP BY q2_.id
+                            ORDER BY 1 DESC
+                            LIMIT 1
+                        ) AS points,
+
+                        (
+                            SELECT COUNT(q5_.id) AS dctrn__2 FROM quiz_quiz q5_
+                            WHERE q5_.user_id = q0_.id
+                        ) AS play_count,
+
+                        (
+                            SELECT COUNT(q6_.id) AS dctrn__3 FROM quiz_friend_invite q6_
+                            WHERE q6_.userId = q0_.id
+                        ) AS invited_friend
+
+                    FROM quiz_user q0_ ORDER BY points DESC NULLS LAST';
+
+            /** @var $q \Doctrine\ORM\NativeQuery */
+            $q = $em->createNativeQuery($sql, $rsm);
+        }}
+
+        $q->setParameter('startDate', $startDate);
+        $q->setParameter('endDate', $endDate);
+
+        return $q;
     }
 }

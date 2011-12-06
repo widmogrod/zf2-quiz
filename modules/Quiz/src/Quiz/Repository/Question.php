@@ -125,4 +125,39 @@ class Question extends EntityRepository
 
         return $result;
     }
+
+    /**
+     * @return \Doctrine\ORM\Query
+     */
+    public function getQueryQuestionList()
+    {
+        $em = $this->getEntityManager();
+        $dql = 'SELECT q, (SELECT a.name FROM Quiz\Entity\Answer a WHERE a.question = q.id AND a.isCorrect = true) AS correct_answer FROM Quiz\Entity\Question q ORDER BY q.id DESC';
+        /* @var $q \Doctrine\ORM\Query */
+        $q = $em->createQuery($dql);
+
+        return $q;
+    }
+
+    public function getQueryStatisticListForUser($userId, $startDate, $endDate)
+    {
+        $em = $this->getEntityManager();
+
+        // quiestions answered by user
+        $sub = 'SELECT COUNT(a.id) FROM Quiz\Entity\QuizAnswer qa JOIN qa.answer a JOIN qa.quiz z WHERE z.user = :userId AND a.question = q.id AND z.date BETWEEN :startDate AND :endDate';
+        // count how offen this quiestion was answered
+        $answers = 'SELECT COUNT(qaa.id) FROM Quiz\Entity\QuizAnswer qaa JOIN qaa.answer aa WHERE aa.question = q.id';
+        // sort quiestion by less used and last answered by user
+        $dql = 'SELECT q, (%s) AS top_answers, (%s) AS user_answers FROM Quiz\Entity\Question q WHERE q.isActive = true ORDER BY top_answers ASC, user_answers ASC ';
+        // one dql to bind them all
+        $dql = sprintf($dql, $answers, $sub);
+
+        /** @var $q  \Doctrine\ORM\Query */
+        $q = $em->createQuery($dql);
+        $q->setParameter('userId', $userId, \Doctrine\DBAL\Types\Type::INTEGER);
+        $q->setParameter('startDate', $startDate);
+        $q->setParameter('endDate', $endDate);
+
+        return $q;
+    }
 }

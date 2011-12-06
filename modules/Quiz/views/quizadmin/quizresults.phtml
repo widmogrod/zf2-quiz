@@ -1,0 +1,19 @@
+<div class="row">
+    <div class="span9">
+        <h2>Wyniki z tygodnia</h2>
+        <p>Od <code><?php echo $this->startDate ?></code> do dnia <code><?php echo $this->endDate ?></code></p>
+    </div>
+    <div class="span5">
+        <div class="well">
+            <form action="" method="get" style="margin-bottom: 0;">
+                <?php echo $this->formText('date', $this->timeDate, array('class' => 'text small', 'placeholder' => 'Podaj dzień')); ?>
+                <button type="submit" class="btn primary">Pokaż</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<?php
+    echo $this->raw('grid')->render();
+?>

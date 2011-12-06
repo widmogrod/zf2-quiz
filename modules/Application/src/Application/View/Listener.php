@@ -152,6 +152,14 @@ class Listener implements ListenerAggregate
             $vars['content'] = $e->getResult();
         }
 
+        /** @var $rq \Zend\Http\PhpEnvironment\Request */
+        $rq = $e->getRequest();
+        if (strtolower($rq->server()->get('HTTP_X_REQUESTED_WITH')) == 'xmlhttprequest')
+        {
+            $response->setContent($vars['content']);
+            return $response;
+        }
+
         $layout   = $this->view->render($layout, $vars);
         $response->setContent($layout);
         return $returnResponse ? $response : null;

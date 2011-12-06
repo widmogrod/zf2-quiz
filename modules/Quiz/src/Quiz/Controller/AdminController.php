@@ -4,15 +4,40 @@ namespace Quiz\Controller;
 use Zend\Mvc\Controller\ActionController;;
 use Quiz\Form\Question;
 
-use DataGrid\DataGrid;
-use DataGrid\Renderer\HtmlTable;
-use Doctrine\ORM\Query\ResultSetMapping;
+use DataGrid\DataGrid,
+    DataGrid\Renderer\HtmlTable;
 
 /**
  * @author Gabriel Habryn <gabriel.habryn@me.com>
  */
 class AdminController extends ActionController
 {
+    public function quizlistAction()
+    {
+        /* @var $em \Doctrine\ORM\EntityManager */
+        $em = $this->getLocator()->get('doctrine_em');
+
+        /* @var $repository \Quiz\Repository\Question */
+        $repository = $em->getRepository('Quiz\Entity\Question');
+        $q = $repository->getQueryQuestionList();
+
+        $grid = DataGrid::factory($q);
+        $grid->setSpecialColumn('menage', function ($row) {
+            $url = sprintf('quizadmin/quizmanage?id=%d', $row['q_id']);
+            $action1 = sprintf('<a href="%s" title="Edytuj pytanie">Edytuj</a>', $url);
+
+            $url = sprintf('quizadmin/quizpreview?id=%d', $row['q_id']);
+            $action2 = sprintf('<a href="%s" class="ajaxDialog" title="Podgląd pytania">Podgląd</a>', $url);
+
+            return sprintf('%s<br/>%s', $action1, $action2);
+        });
+        $grid->setRenderer(new HtmlTable());
+
+        return array(
+            'grid' => $grid
+        );
+    }
+
     public function quizmanageAction()
     {
         /* @var $rq \Zend\Http\PhpEnvironment\Request */
@@ -26,12 +51,15 @@ class AdminController extends ActionController
         $form = new Question();
 
         $result = array(
-            'form' => $form
+            'form' => $form,
+            'isEdit' => false
         );
 
-        if ($id = (int) $rq->query()->get('id')) {
+        if ($id = (int) $rq->query()->get('id'))
+        {
             $data = $repository->getDataForForm($id);
             $form->populate($data);
+            $result['isEdit'] = true;
         }
 
         if (!$rq->isPost()) {
@@ -58,142 +86,118 @@ class AdminController extends ActionController
         return $result;
     }
 
-    public function quizlistAction()
+    public function quizpreviewAction()
     {
+        /* @var $rq \Zend\Http\PhpEnvironment\Request */
+        $rq = $this->getRequest();
+
+        $id = (int) $rq->query()->get('id');
+
+        /* @var $em \Doctrine\ORM\EntityManager */
+        $em = $this->getLocator()->get('doctrine_em');
+        /* @var $repository \Quiz\Repository\Question */
+        $repository = $em->getRepository('Quiz\Entity\Question');
+        return array(
+            'data' => $repository->getDataForForm($id)
+        );
+    }
+
+    public  function quizresultsAction()
+    {
+        /* @var $rq \Zend\Http\PhpEnvironment\Request */
+        $rq = $this->getRequest();
+
+        $time = strtotime($rq->query()->get('date','today'));
+        $startDate = date('Y-m-d', mktime(0,0,0, date('m', $time), date('d', $time) - date('N', $time) + 1, date('Y', $time)));
+        $endDate = date('Y-m-d H:i:s', mktime(0,0,-1, date('m', $time), date('d', $time) - (date('N', $time) - 8), date('Y', $time)));
+        $limit = 200;
+
         /* @var $em \Doctrine\ORM\EntityManager */
         $em = $this->getLocator()->get('doctrine_em');
 
-        /* @var $repository \Quiz\Repository\Question */
-        $repository = $em->getRepository('Quiz\Entity\Question');
-
-        $dql = 'SELECT q, (SELECT a.name FROM Quiz\Entity\Answer a WHERE a.question = q.id AND a.isCorrect = true) AS correct_answer FROM Quiz\Entity\Question q ORDER BY q.id DESC';
-        /* @var $q \Doctrine\ORM\Query */
-        $q = $em->createQuery($dql);
+        /* @var $repository \Quiz\Repository\Quiz */
+        $repository = $em->getRepository('Quiz\Entity\Quiz');
+        $q = $repository->getResultQuery($startDate, $endDate, $limit, true);
 
         $grid = DataGrid::factory($q);
-        $grid->setSpecialColumn('edit', function ($row) {
-            $url = sprintf('quizadmin/quizmanage?id=%d', $row['q_id']);
-            return sprintf('<a href="%s">Edytuj</a>', $url);
-        });
         $grid->setRenderer(new HtmlTable());
+        $grid->setSpecialColumn('facebookId', array(
+            DataGrid::CELL => function ($row) {
+                return sprintf('<img src="https://graph.facebook.com/%s/picture" >', $row['facebookId']);
+            },
+            DataGrid::COLUMN => array(
+                'name' => 'avatar',
+                'attribs' => array(
+                    'width' => '50'
+                )
+            )
+        ));
 
         return array(
-            'grid' => $grid
+            'grid' => $grid,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'timeDate' => date('Y-m-d', $time)
         );
     }
 
     public function quizusersAction()
     {
+        /* @var $rq \Zend\Http\PhpEnvironment\Request */
+        $rq = $this->getRequest();
+
+        /*
+         * Date range validation
+         */
+        {{
+            $time = strtotime($rq->query()->get('date','today'));
+            $startDate = date('Y-m-d', mktime(0,0,0, date('m', $time), date('d', $time) - date('N', $time) + 1, date('Y', $time)));
+            $endDate = date('Y-m-d', mktime(0,0,-1, date('m', $time), date('d', $time) - (date('N', $time) - 8), date('Y', $time)));
+
+            $startDate = $rq->query()->get('startDate', $startDate);
+            $startDate = strtotime($startDate);
+            $startDate = date('Y-m-d', $startDate);
+
+            $endDate   = $rq->query()->get('end Date', $endDate);
+            $endDate   = strtotime($endDate);
+            $endDate = date('Y-m-d', $endDate);
+        }}
+
         /* @var $em \Doctrine\ORM\EntityManager */
         $em = $this->getLocator()->get('doctrine_em');
 
-        /* @var $repository \Quiz\Repository\Question */
-        $repository = $em->getRepository('Quiz\Entity\Question');
+        /* @var $repository \Quiz\Repository\User */
+        $repository = $em->getRepository('Quiz\Entity\User');
+        $q = $repository->getQueryUserSummaryList($startDate, $endDate);
 
-        $startDate = date('Y-m-d', mktime(0,0,0, date('m'), date('d') - date('N') + 1, date('Y')));
-        $endDate = date('Y-m-d H:i:s', mktime(0,0,-1, date('m'), date('d') - (date('N') - 8), date('Y')));
-
-
-//        echo $startDate;
-//        echo $endDate;
-
-        /*
-         * Creating nice query ;)
-         */
-        {{
-            $rsm = new ResultSetMapping;
-            $rsm->addScalarResult('points', 'points');
-            $rsm->addScalarResult('play_count', 'play_count');
-            $rsm->addScalarResult('invited_friend', 'invited_friend');
-            $rsm->addScalarResult('avatar', 'avatar');
-            $rsm->addScalarResult('id', 'id');
-            $rsm->addScalarResult('email', 'email');
-            $rsm->addScalarResult('fullname', 'fullname');
-
-//            $rsm->addEntityResult('Quiz\Entity\User', 'u');
-//            $rsm->addFieldResult('u', 'id', 'id');
-//            $rsm->addFieldResult('u', 'email', 'email');
-//            $rsm->addFieldResult('u', 'fullname', 'fullname');
-
-            $sql = 'SELECT q0_.facebookId AS avatar, q0_.id, q0_.fullname, q0_.email,
-
-                        (
-                            SELECT SUM(q1_.second) * 10 FROM quiz_quiz q2_
-                            INNER JOIN quiz_user q3_ ON q2_.user_id = q3_.id
-                            INNER JOIN quiz_quiz_answer q1_ ON q2_.id = q1_.quiz_id
-                            INNER JOIN quiz_answer q4_ ON q1_.answer_id = q4_.id
-                            WHERE q2_.date BETWEEN :startDate AND :endDate
-                            AND q2_.isClose = true AND q4_.isCorrect = true
-                            AND q3_.id = q0_.id
-                            GROUP BY q2_.id
-                            ORDER BY 1 DESC
-                            LIMIT 1
-                        ) AS points,
-
-                        (
-                            SELECT COUNT(q5_.id) AS dctrn__2 FROM quiz_quiz q5_
-                            WHERE q5_.user_id = q0_.id
-                        ) AS play_count,
-
-                        (
-                            SELECT COUNT(q6_.id) AS dctrn__3 FROM quiz_friend_invite q6_
-                            WHERE q6_.userId = q0_.id
-                        ) AS invited_friend
-
-                    FROM quiz_user q0_ ORDER BY points DESC NULLS LAST';
-
-            /** @var $q \Doctrine\ORM\NativeQuery */
-            $q = $em->createNativeQuery($sql, $rsm);
-
-//            echo $q->getSQL();
-        }}
-
-        /*
-         * Previos DQL statment, is not valid becouse not support LIMIT statment in SUB-SELECT 'points'
-         * Remain for educational purpose.
-         */
-        {{
-//            $points = 'SELECT SUM(ap.second) * 10 FROM Quiz\Entity\Quiz qp '.
-//                       'JOIN qp.user up '.
-//                       'JOIN qp.answers ap '.
-//                       'JOIN ap.answer aap '.
-//                       'WHERE qp.date BETWEEN :startDate AND :endDate '.
-//                       'AND qp.isClose = true AND aap.isCorrect = true '.
-//                       'AND up.id = u.id';
-//
-//            $dql = 'SELECT u.facebookId as avatar, u.id, u.fullname, u.email, '.
-//                        '(%s) AS points, '.
-//                        '(SELECT COUNT(q.id) FROM Quiz\Entity\Quiz q WHERE q.user_id = u.id) AS play_count, '.
-//                        '(SELECT COUNT(fi.id) FROM Quiz\Entity\FriendsInvite fi WHERE fi.userId = u.id) AS invited_friend '.
-//                   'FROM Quiz\Entity\User u ORDER BY points DESC';
-//
-//            $dql = sprintf($dql, $points);
-//
-//            /* @var $q \Doctrine\ORM\Query */
-//            $q = $em->createQuery($dql);
-        }}
-
-        $q->setParameter('startDate', $startDate);
-        $q->setParameter('endDate', $endDate);
-//        \Zend\Debug::dump($q->getParameters());
 
         $grid = DataGrid::factory($q);
-        $grid->setSpecialColumn('avatar', function($row) {
-             return sprintf('<img src="https://graph.facebook.com/%s/picture" >', $row['avatar']);
-        });
+        $grid->setSpecialColumn('avatar', array(
+            DataGrid::CELL => function ($row) {
+                return sprintf('<img src="https://graph.facebook.com/%s/picture" >', $row['avatar']);
+            },
+            DataGrid::COLUMN => array(
+                'name' => 'avatar',
+                'attribs' => array(
+                    'width' => '50'
+                )
+            )
+        ));
         $grid->setSpecialColumn('show_question', function ($row) {
             $url = sprintf('quizadmin/quizuserquestion?id=%d', $row['id']);
-            return sprintf('<a href="%s">Pokaż pytania</a>', $url);
-        });
-        $grid->setSpecialColumn('clear_today_play', function ($row) {
-            $url = sprintf('quizadmin/quizusercleartodayplay?id=%d', $row['id']);
-            return sprintf('<a href="%s">Resetuj dzisiejszą rozgrywkę</a>', $url);
-        });
+            $action1 = sprintf('<a href="%s">Statystyka odpowiedzi na pytania</a>', $url);
 
+            $url = sprintf('quizadmin/quizusercleartodayplay?id=%d', $row['id']);
+            $action2 = sprintf('<a href="%s">Resetuj dzisiejszą rozgrywkę</a>', $url);
+
+            return sprintf('%s<br/>%s', $action1, $action2);
+        });
         $grid->setRenderer(new HtmlTable());
 
         return array(
-            'grid' => $grid
+            'grid' => $grid,
+            'startDate' => $startDate,
+            'endDate' => $endDate
         );
     }
 
@@ -202,35 +206,39 @@ class AdminController extends ActionController
         /* @var $rq \Zend\Http\PhpEnvironment\Request */
         $rq = $this->getRequest();
 
+        $userId = $rq->query()->get('id');
+
+        /*
+         * Date range validation
+         */
+        {{
+            $time = strtotime($rq->query()->get('date','today'));
+            $startDate = date('Y-m-d', mktime(0,0,0, date('m', $time), date('d', $time) - date('N', $time) + 1, date('Y', $time)));
+            $endDate = date('Y-m-d', mktime(0,0,-1, date('m', $time), date('d', $time) - (date('N', $time) - 8), date('Y', $time)));
+
+            $startDate = $rq->query()->get('startDate', $startDate);
+            $startDate = strtotime($startDate);
+            $startDate = date('Y-m-d', $startDate);
+
+            $endDate   = $rq->query()->get('end Date', $endDate);
+            $endDate   = strtotime($endDate);
+            $endDate = date('Y-m-d', $endDate);
+        }}
+
         /* @var $em \Doctrine\ORM\EntityManager */
         $em = $this->getLocator()->get('doctrine_em');
 
-        $userId = $rq->query()->get('id');
-
-        $startDate = date('Y-m-d', mktime(0,0,0, date('m'), date('d') - date('N') + 1, date('Y')));
-        $endDate = date('Y-m-d H:i:s', mktime(0,0,-1, date('m'), date('d') - (date('N') - 8), date('Y')));
-
-        // quiestions answered by user
-        $sub = 'SELECT COUNT(a.id) FROM Quiz\Entity\QuizAnswer qa JOIN qa.answer a JOIN qa.quiz z WHERE z.user = :userId AND a.question = q.id AND z.date BETWEEN :startDate AND :endDate';
-        // count how offen this quiestion was answered
-        $answers = 'SELECT COUNT(qaa.id) FROM Quiz\Entity\QuizAnswer qaa JOIN qaa.answer aa WHERE aa.question = q.id';
-        // sort quiestion by less used and last answered by user
-        $dql = 'SELECT q, (%s) AS top_answers, (%s) AS user_answers FROM Quiz\Entity\Question q WHERE q.isActive = true ORDER BY top_answers ASC, user_answers ASC ';
-        // one dql to bind them all
-        $dql = sprintf($dql, $answers, $sub);
-
-        /** @var $q  \Doctrine\ORM\Query */
-        $q = $em->createQuery($dql);
-        $q->setParameter('userId', $userId, \Doctrine\DBAL\Types\Type::INTEGER);
-        $q->setParameter('startDate', $startDate);
-        $q->setParameter('endDate', $endDate);
-//        $q->setMaxResults(10);
+        /* @var $repository \Quiz\Repository\Question */
+        $repository = $em->getRepository('Quiz\Entity\Question');
+        $q = $repository->getQueryStatisticListForUser($userId, $startDate, $endDate);
 
         $grid = DataGrid::factory($q);
         $grid->setRenderer(new HtmlTable());
 
         return array(
-            'grid' => $grid
+            'grid' => $grid,
+            'startDate' => $startDate,
+            'endDate' => $endDate
         );
     }
 

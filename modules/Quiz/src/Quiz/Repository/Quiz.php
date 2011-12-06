@@ -122,63 +122,55 @@ class Quiz extends EntityRepository
         );
     }
 
-    public function getResultsForThisWeek()
+    public function getResultQuery($startDate, $endDate, $limit, $withEmail = false)
     {
         $em = $this->getEntityManager();
 
-        $startDate = date('Y-m-d', mktime(0,0,0, date('m'), date('d') - date('N') + 1, date('Y')));
-        $endDate = date('Y-m-d H:i:s', mktime(0,0,-1, date('m'), date('d') - (date('N') - 8), date('Y')));
+        $rsm = new ResultSetMapping;
+        $rsm->addScalarResult('points', 'points');
+        $rsm->addScalarResult('fullname', 'fullname');
+        $rsm->addScalarResult('facebookid', 'facebookId');
+        $rsm->addScalarResult('email', 'email');
 
-        /*
-         * Old DQL statment, remain in here for educational purpose
-         */
-        {{
-//            $dql = 'SELECT SUM(a.second) * 10 points, u.fullname fullname, u.facebookId FROM Quiz\Entity\Quiz q '.
-//                   'JOIN q.user u '.
-//                   'JOIN q.answers a '.
-//                   'JOIN a.answer aa '.
-//                   'WHERE q.date BETWEEN :startDate AND :endDate '.
-//                   'AND q.isClose = true AND aa.isCorrect = true '.
-//                   'GROUP BY u.id, u.fullname, u.facebookId ' .
-//                   'ORDER BY points DESC';
-//            /** @var $q  \Doctrine\ORM\Query */
-//            $q = $em->createQuery($dql);
-         }}
+        $cols = 'q0_.facebookid, q0_.fullname, ';
+        if ($withEmail) {
+            $cols .= 'q0_.email,';
+        }
 
-        /*
-         * New Native SQL for power use!
-         */
-        {{
-            $rsm = new ResultSetMapping;
-            $rsm->addScalarResult('points', 'points');
-            $rsm->addScalarResult('fullname', 'fullname');
-            $rsm->addScalarResult('facebookid', 'facebookId');
+        $sql = 'SELECT %s
 
-            $sql = 'SELECT q0_.facebookid, q0_.fullname,
+                    COALESCE ((
+                        SELECT SUM(q1_.second) * 10 FROM quiz_quiz q2_
+                        INNER JOIN quiz_user q3_ ON q2_.user_id = q3_.id
+                        INNER JOIN quiz_quiz_answer q1_ ON q2_.id = q1_.quiz_id
+                        INNER JOIN quiz_answer q4_ ON q1_.answer_id = q4_.id
+                        WHERE q2_.date BETWEEN :startDate AND :endDate
+                        AND q2_.isClose = true AND q4_.isCorrect = true
+                        AND q3_.id = q0_.id
+                        GROUP BY q2_.id
+                        ORDER BY 1 DESC
+                        LIMIT 1
+                    ), 0) AS points
 
-                        COALESCE ((
-                            SELECT SUM(q1_.second) * 10 FROM quiz_quiz q2_
-                            INNER JOIN quiz_user q3_ ON q2_.user_id = q3_.id
-                            INNER JOIN quiz_quiz_answer q1_ ON q2_.id = q1_.quiz_id
-                            INNER JOIN quiz_answer q4_ ON q1_.answer_id = q4_.id
-                            WHERE q2_.date BETWEEN :startDate AND :endDate
-                            AND q2_.isClose = true AND q4_.isCorrect = true
-                            AND q3_.id = q0_.id
-                            GROUP BY q2_.id
-                            ORDER BY 1 DESC
-                            LIMIT 1
-                        ), 0) AS points
+                FROM quiz_user q0_
+                ORDER BY points DESC NULLS LAST
+                LIMIT :limit';
 
-                    FROM quiz_user q0_
-                    ORDER BY points DESC NULLS LAST
-                    LIMIT 30';
+        $sql = sprintf($sql, $cols);
 
-            /** @var $q \Doctrine\ORM\NativeQuery */
-            $q = $em->createNativeQuery($sql, $rsm);
-        }}
+        /** @var $q \Doctrine\ORM\NativeQuery */
+        $q = $em->createNativeQuery($sql, $rsm);
 
         $q->setParameter('startDate', $startDate);
         $q->setParameter('endDate', $endDate);
+        $q->setParameter('limit', $limit);
+
+        return $q;
+    }
+
+    public function getResultForDateRange($startDate, $endDate, $limit)
+    {
+        $q = $this->getResultQuery($startDate, $endDate, $limit);
 
 //        echo $q->getSQL();
 //        \Zend\Debug::dump($q->getParameters());
@@ -193,6 +185,14 @@ class Quiz extends EntityRepository
         }
 
         return $result;
+    }
+
+    public function getResultsForThisWeek()
+    {
+        $startDate = date('Y-m-d', mktime(0,0,0, date('m'), date('d') - date('N') + 1, date('Y')));
+        $endDate = date('Y-m-d H:i:s', mktime(0,0,-1, date('m'), date('d') - (date('N') - 8), date('Y')));
+
+        return $this->getResultForDateRange($startDate, $endDate, 500);
     }
 
     public function saveAnswersForQuiz($quizId, $facebookUserId, array $answers)
@@ -272,26 +272,6 @@ class Quiz extends EntityRepository
         return true;
     }
 
-    public function getResults()
-    {
-        $dql = 'SELECT q, a FROM Quiz\Entity\Question q JOIN q.answers a';
-
-
-        /** @var $q  \Doctrine\ORM\QueryBuilder */
-        $q = $this->getEntityManager()->createQuery($dql);
-        $q->setMaxResults(10);
-
-        $result = array();
-
-        try {
-            $result = $q->getArrayResult();
-        } catch (\Exception $e) {
-            # todo log
-            return false;
-        }
-
-        return $result;
-    }
 
     public function canPlayAgain($userId)
     {

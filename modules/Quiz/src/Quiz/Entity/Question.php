@@ -132,6 +132,8 @@ class Question
             $answers[] = $answer->toArray();
         }
 
+        shuffle($answers);
+
         return array(
             'id' => $this->id,
             'content' => $this->content,

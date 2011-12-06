@@ -1,3 +1,15 @@
+<div class="row">
+    <div class="span14">
+        <h2>Użytkownicy</h2>
+        <div class="well">
+            <form action="" method="get" style="margin-bottom: 0;">
+                Pokaż użytkowników od dnia: <?php echo $this->formText('startDate', $this->startDate, array('class' => 'text small', 'placeholder' => 'podaj dzień')); ?>
+                do dnia: <?php echo $this->formText('endDate', $this->endDate, array('class' => 'text small', 'placeholder' => 'podaj dzień')); ?>
+                <button type="submit" class="btn primary">Pokaż</button>
+            </form>
+        </div>
+    </div>
+</div>
 <?php
     echo $this->raw('grid')->render();
 ?>
