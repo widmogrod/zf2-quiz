@@ -184,7 +184,10 @@ class AdminController extends ActionController
             )
         ));
         $grid->setSpecialColumn('email', function ($row) {
-            return sprintf('<span class="span5" ww>%s</span>', $row['email']);
+            return sprintf('<span class="span3" ww>%s</span>', $row['email']);
+        });
+        $grid->setSpecialColumn('fullname', function ($row) {
+            return sprintf('<span class="span2">%s</span>', $row['fullname']);
         });
         $grid->setSpecialColumn('show_question', function ($row) {
             $url = sprintf('quizadmin/quizuserquestion?id=%d', $row['id']);

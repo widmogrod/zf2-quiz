@@ -38,12 +38,12 @@ class Module implements AutoloaderProvider
         );
     }
 
-    public function getConfig($env = null)
+    public function getConfig()
     {
         $config = new Config(include __DIR__ . '/configs/module.config.php', true);
 
-        if (is_file(__DIR__ . '/configs/module.config.'.$env.'.php')) {
-            $config->merge(new Config(include __DIR__ . '/configs/module.config.'.$env.'.php'));
+        if (is_file(__DIR__ . '/configs/module.config.'.APPLICATION_ENV.'.php')) {
+            $config->merge(new Config(include __DIR__ . '/configs/module.config.'.APPLICATION_ENV.'.php'));
         }
 
         return $config;
